@@ -1,0 +1,16 @@
+{
+"companyName": "FiveDVR",
+"productName": "GenotropinPfizerGlobal",
+"productVersion": "0.1",
+"dataUrl": "GenoV1Zappar.data.unityweb",
+"wasmCodeUrl": "GenoV1Zappar.wasm.code.unityweb",
+"wasmFrameworkUrl": "GenoV1Zappar.wasm.framework.unityweb",
+"graphicsAPI": ["WebGL 1.0"],
+"webglContextAttributes": {"preserveDrawingBuffer": false},
+"splashScreenStyle": "Dark",
+"backgroundColor": "#231F20",
+"cacheControl": {"default": "must-revalidate"},
+"developmentBuild": false,
+"multithreading": false,
+"unityVersion": "2019.4.20f1"
+}
