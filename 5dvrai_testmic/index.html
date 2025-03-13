@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity Web Player | OmmayAIdemo</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+
+    <!-- MICROPHONE PRO START -->
+    <script src='./microphone.js'></script>
+    <!-- MICROPHONE PRO END -->
+</head>
+<body>
+    <div id="unity-container" class="unity-desktop">
+        <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
+        <div id="unity-loading-bar">
+            <div id="unity-logo"></div>
+            <div id="unity-progress-bar-empty">
+                <div id="unity-progress-bar-full"></div>
+            </div>
+        </div>
+        <div id="unity-warning"> </div>
+        <div id="unity-footer">
+            <div id="unity-logo-title-footer"></div>
+            <div id="unity-fullscreen-button"></div>
+            <div id="unity-build-title">OmmayAIdemo</div>
+        </div>
+    </div>
+
+    <script>
+        var canvas = document.querySelector("#unity-canvas");
+        var unityReady = false;
+        var micActive = false;
+
+        function unityShowBanner(msg, type) {
+            var warningBanner = document.querySelector("#unity-warning");
+            function updateBannerVisibility() {
+                warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+            }
+            var div = document.createElement('div');
+            div.innerHTML = msg;
+            warningBanner.appendChild(div);
+            if (type == 'error') div.style = 'background: red; padding: 10px;';
+            else {
+                if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+                setTimeout(function() {
+                    warningBanner.removeChild(div);
+                    updateBannerVisibility();
+                }, 5000);
+            }
+            updateBannerVisibility();
+        }
+
+        var buildUrl = "Build";
+        var loaderUrl = buildUrl + "/Build.loader.js";
+        var config = {
+            arguments: [],
+            dataUrl: buildUrl + "/Build.data",
+            frameworkUrl: buildUrl + "/Build.framework.js",
+            codeUrl: buildUrl + "/Build.wasm",
+            streamingAssetsUrl: "StreamingAssets",
+            companyName: "DefaultCompany",
+            productName: "OmmayAIdemo",
+            productVersion: "1.0",
+            showBanner: unityShowBanner,
+        };
+
+        var script = document.createElement("script");
+        script.src = loaderUrl;
+        script.onload = () => {
+            createUnityInstance(canvas, config, (progress) => {
+                document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
+            }).then((unityInstance) => {
+                document.querySelector("#unity-loading-bar").style.display = "none";
+                document.querySelector("#unity-fullscreen-button").onclick = () => {
+                    unityInstance.SetFullscreen(1);
+                };
+                window.unityInstance = unityInstance;
+                unityReady = true;
+                if (document.hasFocus()) {
+                    startDetection();
+                }
+            }).catch((message) => {
+                alert(message);
+            });
+        };
+        document.body.appendChild(script);
+
+        function sendMessageToUnity(message) {
+            if (unityReady && window.unityInstance && typeof window.unityInstance.SendMessage === "function" && micActive) {
+                console.log("✅ Sending to Unity:", message);
+                window.unityInstance.SendMessage("VoiceDetector", "OnVoiceStatusChanged", message);
+            } else {
+                console.warn("⚠️ Unity is not ready or tab is not active. Skipping message:", message);
+            }
+        }
+
+        async function startDetection() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const analyser = audioContext.createAnalyser();
+                const microphone = audioContext.createMediaStreamSource(stream);
+                const scriptProcessor = audioContext.createScriptProcessor(256, 1, 1);
+
+                analyser.fftSize = 512;
+                microphone.connect(analyser);
+                analyser.connect(scriptProcessor);
+                scriptProcessor.connect(audioContext.destination);
+
+                let silenceTimeout = null;
+                const SILENCE_DELAY = 4000;
+                const THRESHOLD = 0.05;
+                micActive = true;
+
+                scriptProcessor.onaudioprocess = function(event) {
+                    if (!document.hasFocus()) return; // Process only if the tab is active
+                    let inputData = event.inputBuffer.getChannelData(0);
+                    let sum = 0.0;
+                    for (let i = 0; i < inputData.length; i++) {
+                        sum += inputData[i] * inputData[i];
+                    }
+                    let rms = Math.sqrt(sum / inputData.length);
+
+                    if (rms > THRESHOLD) {
+                        sendMessageToUnity("Loud");
+                        if (silenceTimeout) {
+                            clearTimeout(silenceTimeout);
+                            silenceTimeout = null;
+                        }
+                    } else {
+                        if (!silenceTimeout) {
+                            silenceTimeout = setTimeout(() => {
+                                sendMessageToUnity("Normal");
+                                silenceTimeout = null;
+                            }, SILENCE_DELAY);
+                        }
+                    }
+                };
+            } catch (error) {
+                console.error("Error accessing microphone:", error);
+                alert("Microphone access denied");
+            }
+        }
+
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden) {
+                micActive = false;
+                console.log("🔴 Tab is inactive. Pausing microphone processing.");
+            } else {
+                micActive = true;
+                console.log("🟢 Tab is active. Resuming microphone processing.");
+                if (unityReady) {
+                    startDetection();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
