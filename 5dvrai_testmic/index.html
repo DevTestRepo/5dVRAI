@@ -30,6 +30,8 @@
 
     <script>
         var canvas = document.querySelector("#unity-canvas");
+        var unityReady = false;
+        var micActive = false;
 
         function unityShowBanner(msg, type) {
             var warningBanner = document.querySelector("#unity-warning");
@@ -64,20 +66,6 @@
             showBanner: unityShowBanner,
         };
 
-        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-            var meta = document.createElement('meta');
-            meta.name = 'viewport';
-            meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-            document.getElementsByTagName('head')[0].appendChild(meta);
-            document.querySelector("#unity-container").className = "unity-mobile";
-            canvas.className = "unity-mobile";
-        } else {
-            canvas.style.width = "960px";
-            canvas.style.height = "600px";
-        }
-
-        document.querySelector("#unity-loading-bar").style.display = "block";
-
         var script = document.createElement("script");
         script.src = loaderUrl;
         script.onload = () => {
@@ -89,7 +77,10 @@
                     unityInstance.SetFullscreen(1);
                 };
                 window.unityInstance = unityInstance;
-                startDetection();
+                unityReady = true;
+                if (document.hasFocus()) {
+                    startDetection();
+                }
             }).catch((message) => {
                 alert(message);
             });
@@ -97,8 +88,11 @@
         document.body.appendChild(script);
 
         function sendMessageToUnity(message) {
-            if (typeof window.unityInstance !== "undefined" && window.unityInstance !== null) {
+            if (unityReady && window.unityInstance && typeof window.unityInstance.SendMessage === "function" && micActive) {
+                console.log("✅ Sending to Unity:", message);
                 window.unityInstance.SendMessage("VoiceDetector", "OnVoiceStatusChanged", message);
+            } else {
+                console.warn("⚠️ Unity is not ready or tab is not active. Skipping message:", message);
             }
         }
 
@@ -116,10 +110,12 @@
                 scriptProcessor.connect(audioContext.destination);
 
                 let silenceTimeout = null;
-                const SILENCE_DELAY = 1500;
+                const SILENCE_DELAY = 4000;
                 const THRESHOLD = 0.05;
+                micActive = true;
 
                 scriptProcessor.onaudioprocess = function(event) {
+                    if (!document.hasFocus()) return; // Process only if the tab is active
                     let inputData = event.inputBuffer.getChannelData(0);
                     let sum = 0.0;
                     for (let i = 0; i < inputData.length; i++) {
@@ -147,6 +143,19 @@
                 alert("Microphone access denied");
             }
         }
+
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden) {
+                micActive = false;
+                console.log("🔴 Tab is inactive. Pausing microphone processing.");
+            } else {
+                micActive = true;
+                console.log("🟢 Tab is active. Resuming microphone processing.");
+                if (unityReady) {
+                    startDetection();
+                }
+            }
+        });
     </script>
 </body>
 </html>
