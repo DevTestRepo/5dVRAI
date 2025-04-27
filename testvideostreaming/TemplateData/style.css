@@ -17,6 +17,6 @@ body { padding: 0; margin: 0 }
 #LandScapeImage {
     width: 100%;
     height: 100%;
-    content: url("Logo.jpg");
+    content: url("Logo.png");
     z-index: 99999;
 }
