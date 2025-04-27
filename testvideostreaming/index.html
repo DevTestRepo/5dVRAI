@@ -20,7 +20,7 @@
       <div id="unity-footer">
         <div id="unity-webgl-logo"></div>
         <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">Adnoc</div>
+        <div id="unity-build-title">Runner</div>
       </div>
     </div>
     <script>
@@ -31,6 +31,29 @@
       var progressBarFull = document.querySelector("#unity-progress-bar-full");
       var fullscreenButton = document.querySelector("#unity-fullscreen-button");
       var warningBanner = document.querySelector("#unity-warning");
+      const ImageLandScape = document.querySelector("#LandScapeImage");
+        if(window.innerHeight < window.innerWidth){
+
+          ImageLandScape.style.display="none"
+          
+           
+        }
+      else{
+        
+        ImageLandScape.style.display="block"
+      }
+      window.addEventListener("resize", myFunction);
+       function myFunction() {
+              if(window.innerHeight < window.innerWidth){
+                ImageLandScape.style.display="none"
+        
+           
+        }
+      else{
+        
+        ImageLandScape.style.display="block"
+      }
+    }
 
       // Shows a temporary message banner/ribbon for a few seconds, or
       // a permanent error message on top of the canvas if type=='error'.
