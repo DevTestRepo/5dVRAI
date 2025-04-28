@@ -7,6 +7,24 @@
   <link rel="shortcut icon" href="TemplateData/favicon.ico">
   <link rel="stylesheet" href="TemplateData/style.css">
   <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: black;
+    }
+    #unity-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    #unity-canvas {
+      width: 100%;
+      height: 100%;
+      background: black;
+      display: block;
+    }
     #start-button {
       position: absolute;
       top: 50%;
@@ -21,93 +39,113 @@
       cursor: pointer;
       z-index: 9999;
     }
+    #unity-loading-bar {
+      display: none; /* hide loading bar at start */
+    }
   </style>
 </head>
 <body>
-  <div id="unity-container" class="unity-desktop">
-    <canvas id="unity-canvas" width="1024" height="768" tabindex="-1"></canvas>
-    <div id="unity-loading-bar">
-      <div id="unity-logo"></div>
-      <div id="unity-progress-bar-empty">
-        <div id="unity-progress-bar-full"></div>
-      </div>
-    </div>
-    <div id="unity-warning"></div>
-    <div id="unity-footer">
-      <div id="unity-webgl-logo"></div>
-      <div id="unity-build-title">Adnoc</div>
+
+<div id="unity-container" class="unity-desktop">
+  <canvas id="unity-canvas" tabindex="-1"></canvas>
+  <div id="unity-loading-bar">
+    <div id="unity-logo"></div>
+    <div id="unity-progress-bar-empty">
+      <div id="unity-progress-bar-full"></div>
     </div>
   </div>
+  <div id="unity-warning"></div>
+  <div id="unity-footer">
+    <div id="unity-webgl-logo"></div>
+    <div id="unity-build-title">Adnoc</div>
+  </div>
+</div>
 
-  <button id="start-button">Start Game</button>
+<button id="start-button">Start Fullscreen</button>
 
-  <script>
-    var container = document.querySelector("#unity-container");
-    var canvas = document.querySelector("#unity-canvas");
-    var loadingBar = document.querySelector("#unity-loading-bar");
-    var progressBarFull = document.querySelector("#unity-progress-bar-full");
-    var warningBanner = document.querySelector("#unity-warning");
-    var startButton = document.getElementById("start-button");
+<script>
+  var container = document.querySelector("#unity-container");
+  var canvas = document.querySelector("#unity-canvas");
+  var loadingBar = document.querySelector("#unity-loading-bar");
+  var progressBarFull = document.querySelector("#unity-progress-bar-full");
+  var warningBanner = document.querySelector("#unity-warning");
+  var startButton = document.getElementById("start-button");
 
-    function resizeCanvas() {
-      canvas.style.width = window.innerWidth + "px";
-      canvas.style.height = window.innerHeight + "px";
+  function unityShowBanner(msg, type) {
+    function updateBannerVisibility() {
+      warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
     }
-    window.addEventListener('load', resizeCanvas);
-    window.addEventListener('resize', resizeCanvas);
-
-    function unityShowBanner(msg, type) {
-      function updateBannerVisibility() {
-        warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
-      }
-      var div = document.createElement('div');
-      div.innerHTML = msg;
-      warningBanner.appendChild(div);
-      if (type === 'error') div.style = 'background: red; padding: 10px;';
-      else {
-        if (type === 'warning') div.style = 'background: yellow; padding: 10px;';
-        setTimeout(function () {
-          warningBanner.removeChild(div);
-          updateBannerVisibility();
-        }, 5000);
-      }
-      updateBannerVisibility();
+    var div = document.createElement('div');
+    div.innerHTML = msg;
+    warningBanner.appendChild(div);
+    if (type === 'error') div.style = 'background: red; padding: 10px;';
+    else {
+      if (type === 'warning') div.style = 'background: yellow; padding: 10px;';
+      setTimeout(function () {
+        warningBanner.removeChild(div);
+        updateBannerVisibility();
+      }, 5000);
     }
+    updateBannerVisibility();
+  }
 
-    var buildUrl = "Build";
-    var loaderUrl = buildUrl + "/Build.loader.js";
-    var config = {
-      dataUrl: buildUrl + "/Build.data",
-      frameworkUrl: buildUrl + "/Build.framework.js",
-      codeUrl: buildUrl + "/Build.wasm",
-      streamingAssetsUrl: "StreamingAssets",
-      companyName: "DefaultCompany",
-      productName: "Adnoc",
-      productVersion: "0.1",
-      showBanner: unityShowBanner,
-      devicePixelRatio: 1
-    };
+  var buildUrl = "Build";
+  var loaderUrl = buildUrl + "/Build.loader.js";
+  var config = {
+    dataUrl: buildUrl + "/Build.data",
+    frameworkUrl: buildUrl + "/Build.framework.js",
+    codeUrl: buildUrl + "/Build.wasm",
+    streamingAssetsUrl: "StreamingAssets",
+    companyName: "DefaultCompany",
+    productName: "Adnoc",
+    productVersion: "0.1",
+    showBanner: unityShowBanner,
+    devicePixelRatio: 1 // Optional: better performance for mobile
+  };
 
-    var unityInstance;
+  var unityInstance = null;
 
+  function openRealFullscreen() {
+    if (canvas.requestFullscreen) {
+      canvas.requestFullscreen();
+    } else if (canvas.webkitRequestFullscreen) { /* Safari */
+      canvas.webkitRequestFullscreen();
+    } else if (canvas.msRequestFullscreen) { /* IE11 */
+      canvas.msRequestFullscreen();
+    }
+  }
+
+  function resizeCanvas() {
+    canvas.style.width = window.innerWidth + "px";
+    canvas.style.height = window.innerHeight + "px";
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+  window.addEventListener('load', resizeCanvas);
+
+  startButton.addEventListener('click', function() {
+    startButton.style.display = "none"; // Hide the start button
+    openRealFullscreen();               // Open real fullscreen
+    loadUnityGame();                     // Then load Unity
+  });
+
+  function loadUnityGame() {
+    loadingBar.style.display = "block"; // Show loading bar
     var script = document.createElement("script");
     script.src = loaderUrl;
     script.onload = () => {
       createUnityInstance(canvas, config, (progress) => {
         progressBarFull.style.width = 100 * progress + "%";
       }).then((instance) => {
-        loadingBar.style.display = "none";
+        loadingBar.style.display = "none"; // Hide loading bar when done
         unityInstance = instance;
       }).catch((message) => {
         alert(message);
       });
     };
     document.body.appendChild(script);
+  }
+</script>
 
-    startButton.addEventListener("click", function() {
-      startButton.style.display = "none"; // Hide the button
-      unityInstance.SetFullscreen(1); // Now go fullscreen!
-    });
-  </script>
 </body>
 </html>
