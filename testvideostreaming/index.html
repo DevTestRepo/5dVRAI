@@ -103,14 +103,13 @@
       var script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
-        document.makeFullscreen('unity-container');
         createUnityInstance(canvas, config, (progress) => {
           progressBarFull.style.width = 100 * progress + "%";
               }).then((unityInstance) => {
                 document.makeFullscreen('unity-container');
                 loadingBar.style.display = "none";
                 fullscreenButton.onclick = () => {
-                
+                  document.makeFullscreen('unity-container');
                 };
               }).catch((message) => {
                 alert(message);
