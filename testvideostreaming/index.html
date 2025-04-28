@@ -6,6 +6,22 @@
   <title>Unity WebGL Player | Adnoc</title>
   <link rel="shortcut icon" href="TemplateData/favicon.ico">
   <link rel="stylesheet" href="TemplateData/style.css">
+  <style>
+    #start-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px 40px;
+      font-size: 24px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      z-index: 9999;
+    }
+  </style>
 </head>
 <body>
   <div id="unity-container" class="unity-desktop">
@@ -23,14 +39,16 @@
     </div>
   </div>
 
+  <button id="start-button">Start Game</button>
+
   <script>
     var container = document.querySelector("#unity-container");
     var canvas = document.querySelector("#unity-canvas");
     var loadingBar = document.querySelector("#unity-loading-bar");
     var progressBarFull = document.querySelector("#unity-progress-bar-full");
     var warningBanner = document.querySelector("#unity-warning");
+    var startButton = document.getElementById("start-button");
 
-    // Auto Resize Canvas to Window Size
     function resizeCanvas() {
       canvas.style.width = window.innerWidth + "px";
       canvas.style.height = window.innerHeight + "px";
@@ -38,7 +56,6 @@
     window.addEventListener('load', resizeCanvas);
     window.addEventListener('resize', resizeCanvas);
 
-    // Banner display function (optional)
     function unityShowBanner(msg, type) {
       function updateBannerVisibility() {
         warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
@@ -68,39 +85,29 @@
       productName: "Adnoc",
       productVersion: "0.1",
       showBanner: unityShowBanner,
-      devicePixelRatio: 1 // Optional: set to 1 for better performance on mobile
+      devicePixelRatio: 1
     };
 
-    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-      // Mobile settings
-      var meta = document.createElement('meta');
-      meta.name = 'viewport';
-      meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-      document.getElementsByTagName('head')[0].appendChild(meta);
-
-      container.className = "unity-mobile";
-      canvas.className = "unity-mobile";
-    } else {
-      // Desktop settings
-      container.className = "unity-desktop";
-      canvas.className = "unity-desktop";
-    }
-
-    loadingBar.style.display = "block";
+    var unityInstance;
 
     var script = document.createElement("script");
     script.src = loaderUrl;
     script.onload = () => {
       createUnityInstance(canvas, config, (progress) => {
         progressBarFull.style.width = 100 * progress + "%";
-      }).then((unityInstance) => {
+      }).then((instance) => {
         loadingBar.style.display = "none";
-        // No need for fullscreen button or click handlers
+        unityInstance = instance;
       }).catch((message) => {
         alert(message);
       });
     };
     document.body.appendChild(script);
+
+    startButton.addEventListener("click", function() {
+      startButton.style.display = "none"; // Hide the button
+      unityInstance.SetFullscreen(1); // Now go fullscreen!
+    });
   </script>
 </body>
 </html>
