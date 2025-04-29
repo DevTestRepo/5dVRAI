@@ -53,6 +53,18 @@
       z-index: 9999;
       object-fit: cover;
     }
+    #fullscreen-button {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 10000;
+      padding: 10px;
+      background-color: #09f;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+    }
   </style>
 </head>
 
@@ -74,6 +86,9 @@
   <!-- Landscape warning image -->
   <img id="LandScapeImage" src="TemplateData/landscape-warning.png" alt="Please rotate your device">
 
+  <!-- Fullscreen Button -->
+  <button id="fullscreen-button">Go Fullscreen</button>
+
   <script>
     var buildUrl = "Build";
     var loaderUrl = buildUrl + "/Build.loader.js";
@@ -92,6 +107,7 @@
     var loadingBar = document.querySelector("#unity-loading-bar");
     var progressBarFull = document.querySelector("#unity-progress-bar-full");
     var ImageLandScape = document.querySelector("#LandScapeImage");
+    var fullscreenButton = document.querySelector("#fullscreen-button");
 
     loadingBar.style.display = "block";
 
@@ -108,6 +124,22 @@
 
     window.addEventListener("resize", checkOrientation);
     checkOrientation(); // Check on page load
+
+    // Function to go fullscreen
+    function goFullScreen() {
+      if (canvas.requestFullscreen) {
+        canvas.requestFullscreen();
+      } else if (canvas.mozRequestFullScreen) { // Firefox
+        canvas.mozRequestFullScreen();
+      } else if (canvas.webkitRequestFullscreen) { // Chrome, Safari, Opera
+        canvas.webkitRequestFullscreen();
+      } else if (canvas.msRequestFullscreen) { // IE/Edge
+        canvas.msRequestFullscreen();
+      }
+    }
+
+    // Add event listener to the fullscreen button
+    fullscreenButton.addEventListener("click", goFullScreen);
 
     // Load Unity
     var script = document.createElement("script");
