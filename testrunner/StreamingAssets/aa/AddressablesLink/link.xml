@@ -10,11 +10,13 @@
     <type fullname="Obstacle" preserve="all" />
     <type fullname="ObstacleManager" preserve="all" />
     <type fullname="PlayerController" preserve="all" />
+    <type fullname="PopupMessageManager" preserve="all" />
     <type fullname="ReceivedScoreUIManager" preserve="all" />
     <type fullname="Road" preserve="all" />
     <type fullname="RoadsManger" preserve="all" />
     <type fullname="SetRevive" preserve="all" />
     <type fullname="SwapManger" preserve="all" />
+    <type fullname="TrigerPopups" preserve="all" />
     <type fullname="UIManagerRunner" preserve="all" />
     <type fullname="WebGLSupport.WebGLInput" preserve="all" />
     <type fullname="ObjectToPool" preserve="nothing" serialized="true" />
@@ -136,6 +138,7 @@
     <type fullname="UnityEngine.UI.CanvasScaler" preserve="all" />
     <type fullname="UnityEngine.UI.ContentSizeFitter" preserve="all" />
     <type fullname="UnityEngine.UI.GraphicRaycaster" preserve="all" />
+    <type fullname="UnityEngine.UI.HorizontalLayoutGroup" preserve="all" />
     <type fullname="UnityEngine.UI.Image" preserve="all" />
     <type fullname="UnityEngine.UI.LayoutElement" preserve="all" />
     <type fullname="UnityEngine.UI.Mask" preserve="all" />
