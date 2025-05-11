@@ -72,18 +72,21 @@
   <!-- Landscape warning image -->
   <img id="LandScapeImage" src="TemplateData/landscape-warning.png" alt="Please rotate your device">
 
+
+  
   <script>
     var buildUrl = "Build";
-    var loaderUrl = buildUrl + "/Build.loader.js";
-    var config = {
-      dataUrl: buildUrl + "/Build.data",
-      frameworkUrl: buildUrl + "/Build.framework.js",
-      codeUrl: buildUrl + "/Build.wasm",
-      streamingAssetsUrl: "StreamingAssets",
-      companyName: "DefaultCompany",
-      productName: "Endless Runner",
-      productVersion: "0.1",
-    };
+      var loaderUrl = buildUrl + "/Build.loader.js";
+      var config = {
+        dataUrl: buildUrl + "/72fc8665e9ca52109a768a762da99b8a.data.gz",
+        frameworkUrl: buildUrl + "/d8b1ac5e86072b8395f5b911eaf30ace.js.gz",
+        codeUrl: buildUrl + "/5ea3562e0e31acd1369b65ef2c3e8325.wasm.gz",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "DefaultCompany",
+        productName: "Endless Runner",
+        productVersion: "0.1",
+        showBanner: unityShowBanner,
+      };
 
     var container = document.querySelector("#unity-container");
     var canvas = document.querySelector("#unity-canvas");
