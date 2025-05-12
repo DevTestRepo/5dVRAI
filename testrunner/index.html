@@ -13,6 +13,7 @@
       padding: 0;
       height: 100%;
       overflow: hidden;
+      font-family: Arial, sans-serif;
     }
 
     #unity-container {
@@ -37,9 +38,6 @@
 
     /* ✅ Splash Background */
     #LoadingSplash {
-      display: flex;
-      justify-content: center;
-      align-items: flex-end;
       position: absolute;
       top: 0;
       left: 0;
@@ -50,27 +48,41 @@
       background-size: cover;
     }
 
-    /* ✅ Wide Orange Loading Bar */
+    /* ✅ Loading Text */
+    #loading-text {
+      position: absolute;
+      bottom: 150px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 16px;
+      color: white;
+      text-shadow: 1px 1px 2px black;
+    }
+
+    /* ✅ Stylized Loading Bar */
     #custom-loading-bar {
-        position: absolute;
-  bottom: 120px; /* ⬅️ Adjust this to move it higher or lower */
-  left: 50%;
-  transform: translateX(-50%);
+      position: absolute;
+      bottom: 120px;
+      left: 50%;
+      transform: translateX(-50%);
       width: 40%;
       height: 20px;
-      background-color: rgba(255, 255, 255, 0.3);
-      border-radius: 5px;
+      background-color: #1f1f1f;
+      border-radius: 12px;
+      border: 2px solid white;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
       overflow: hidden;
     }
 
     #custom-loading-bar-fill {
       width: 0%;
       height: 100%;
-      background-color: #FFA500; /* Orange */
-      transition: width 0.2s ease;
+      background-color: #FFA500;
+      border-radius: 12px 0 0 12px;
+      transition: width 0.3s ease;
     }
 
-    /* ✅ Rotate warning image */
+    /* ✅ Rotate Warning */
     #RotateWarning {
       display: none;
       position: absolute;
@@ -85,22 +97,23 @@
 </head>
 
 <body>
-  <!-- ✅ Splash Screen with Loading Bar -->
+  <!-- ✅ Splash Screen with Loading -->
   <div id="LoadingSplash">
+    <div id="loading-text">Loading...</div>
     <div id="custom-loading-bar">
       <div id="custom-loading-bar-fill"></div>
     </div>
   </div>
 
-  <!-- ✅ Orientation Warning Image -->
+  <!-- ✅ Rotate Device Warning -->
   <img id="RotateWarning" src="TemplateData/lg.png" alt="Please rotate your device" />
 
-  <!-- ✅ Unity Game Container -->
+  <!-- ✅ Unity Canvas -->
   <div id="unity-container" class="unity-desktop">
     <canvas id="unity-canvas"></canvas>
   </div>
 
-  <!-- ✅ Unity Loader Script -->
+  <!-- ✅ Unity Loader -->
   <script>
     var buildUrl = "Build";
     var loaderUrl = buildUrl + "/Build.loader.js";
@@ -114,12 +127,12 @@
       productVersion: "0.1",
     };
 
-    var canvas = document.querySelector("#unity-canvas");
-    var splash = document.querySelector("#LoadingSplash");
-    var barFill = document.querySelector("#custom-loading-bar-fill");
-    var rotateWarning = document.querySelector("#RotateWarning");
+    const canvas = document.querySelector("#unity-canvas");
+    const splash = document.querySelector("#LoadingSplash");
+    const barFill = document.querySelector("#custom-loading-bar-fill");
+    const rotateWarning = document.querySelector("#RotateWarning");
 
-    // ✅ Orientation check
+    // ✅ Orientation Check
     function checkOrientation() {
       if (window.innerHeight > window.innerWidth) {
         rotateWarning.style.display = "block";
@@ -130,10 +143,10 @@
 
     window.addEventListener("resize", checkOrientation);
     window.addEventListener("orientationchange", checkOrientation);
-    checkOrientation(); // Initial check
+    checkOrientation();
 
     // ✅ Load Unity
-    var script = document.createElement("script");
+    const script = document.createElement("script");
     script.src = loaderUrl;
     script.onload = () => {
       createUnityInstance(canvas, config, (progress) => {
