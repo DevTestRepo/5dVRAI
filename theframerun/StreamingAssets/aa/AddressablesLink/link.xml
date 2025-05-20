@@ -4,6 +4,7 @@
     <type fullname="BreakEffectManger" preserve="all" />
     <type fullname="Coins" preserve="all" />
     <type fullname="CollectibleManager" preserve="all" />
+    <type fullname="EGOBlock" preserve="all" />
     <type fullname="FirstGearGames.SmoothCameraShaker.CameraShaker" preserve="all" />
     <type fullname="FirstGearGames.SmoothCameraShaker.ShakeData" preserve="all" />
     <type fullname="GameFlowManager" preserve="all" />
