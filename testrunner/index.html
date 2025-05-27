@@ -184,8 +184,10 @@
         rotateWarning.style.display = "none";
       }
     }
-    function goFullscreen() {
+  function goFullscreen() {
   const elem = document.documentElement;
+
+  // Request fullscreen
   if (elem.requestFullscreen) {
     elem.requestFullscreen();
   } else if (elem.mozRequestFullScreen) {
@@ -195,6 +197,9 @@
   } else if (elem.msRequestFullscreen) {
     elem.msRequestFullscreen();
   }
+
+  // ✅ Hide the rotate warning overlay
+  document.getElementById("RotateWarning").style.display = "none";
 }
 
     window.addEventListener("resize", checkOrientation);
