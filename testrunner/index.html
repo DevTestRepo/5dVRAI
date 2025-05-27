@@ -36,7 +36,6 @@
       display: none;
     }
 
-    /* ✅ Splash Background */
     #LoadingSplash {
       position: absolute;
       top: 0;
@@ -48,7 +47,6 @@
       background-size: cover;
     }
 
-    /* ✅ Loading Text */
     #loading-text {
       position: absolute;
       bottom: 150px;
@@ -59,7 +57,6 @@
       text-shadow: 1px 1px 2px black;
     }
 
-    /* ✅ Stylized Loading Bar */
     #custom-loading-bar {
       position: absolute;
       bottom: 60px;
@@ -82,7 +79,6 @@
       transition: width 0.3s ease;
     }
 
-    /* ✅ Rotate Warning */
     #RotateWarning {
       display: none;
       position: absolute;
@@ -91,72 +87,60 @@
       width: 100%;
       height: 100%;
       z-index: 10000;
-      object-fit: cover;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+      color: white;
+      font-size: 18px;
     }
-    #RotateWarning {
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 10000;
-  background: rgba(0, 0, 0, 0.85);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  text-align: center;
-  color: white;
-  font-size: 18px;
-}
 
-#RotateWarning img {
-  max-width: 200px;
-  margin-bottom: 20px;
-}
+    #RotateWarning img {
+      max-width: 200px;
+      margin-bottom: 20px;
+    }
 
-#RotateWarning button {
-  margin-top: 20px;
-  padding: 12px 24px;
-  background-color: #FFA500;
-  border: none;
-  color: black;
-  font-weight: bold;
-  font-size: 16px;
-  border-radius: 6px;
-  cursor: pointer;
-}
+    #RotateWarning button {
+      margin-top: 20px;
+      padding: 12px 24px;
+      background-color: #FFA500;
+      border: none;
+      color: black;
+      font-weight: bold;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
 
-#RotateWarning button:hover {
-  background-color: #ffcc66;
-}
+    #RotateWarning button:hover {
+      background-color: #ffcc66;
+    }
   </style>
 </head>
 
 <body>
-  <!-- ✅ Splash Screen with Loading -->
+  <!-- ✅ Splash Screen -->
   <div id="LoadingSplash">
-    <div id="loading-text"></div>
+    <div id="loading-text">Loading...</div>
     <div id="custom-loading-bar">
       <div id="custom-loading-bar-fill"></div>
     </div>
   </div>
 
-  <!-- ✅ Rotate Device Warning -->
-  <img id="RotateWarning" src="TemplateData/lg.png" alt="Please rotate your device" />
+  <!-- ✅ Rotate Device + Fullscreen Prompt -->
+  <div id="RotateWarning">
+    <img src="TemplateData/lg.png" alt="Please rotate your device" />
+    <p>Please rotate your device to landscape.<br>Then tap below to continue.</p>
+    <button onclick="goFullscreen()">Enter Fullscreen</button>
+  </div>
 
   <!-- ✅ Unity Canvas -->
   <div id="unity-container" class="unity-desktop">
     <canvas id="unity-canvas"></canvas>
   </div>
-<div id="RotateWarning">
-  <div id="rotate-overlay">
-    <img src="TemplateData/lg.png" alt="Please rotate your device" />
-    <p>Please rotate your device to landscape.</p>
-    <button onclick="goFullscreen()">Enter Fullscreen</button>
-  </div>
-</div>
+
   <!-- ✅ Unity Loader -->
   <script>
     var buildUrl = "Build";
@@ -176,31 +160,13 @@
     const barFill = document.querySelector("#custom-loading-bar-fill");
     const rotateWarning = document.querySelector("#RotateWarning");
 
-    // ✅ Orientation Check
     function checkOrientation() {
       if (window.innerHeight > window.innerWidth) {
-        rotateWarning.style.display = "block";
+        rotateWarning.style.display = "flex";
       } else {
         rotateWarning.style.display = "none";
       }
     }
-  function goFullscreen() {
-  const elem = document.documentElement;
-
-  // Request fullscreen
-  if (elem.requestFullscreen) {
-    elem.requestFullscreen();
-  } else if (elem.mozRequestFullScreen) {
-    elem.mozRequestFullScreen();
-  } else if (elem.webkitRequestFullscreen) {
-    elem.webkitRequestFullscreen();
-  } else if (elem.msRequestFullscreen) {
-    elem.msRequestFullscreen();
-  }
-
-  // ✅ Hide the rotate warning overlay
-  document.getElementById("RotateWarning").style.display = "none";
-}
 
     window.addEventListener("resize", checkOrientation);
     window.addEventListener("orientationchange", checkOrientation);
@@ -219,6 +185,22 @@
       });
     };
     document.body.appendChild(script);
+
+    // ✅ Fullscreen function
+    function goFullscreen() {
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.mozRequestFullScreen) {
+        elem.mozRequestFullScreen();
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+      }
+      // Hide the warning after entering fullscreen
+      document.getElementById("RotateWarning").style.display = "none";
+    }
   </script>
 </body>
 </html>
