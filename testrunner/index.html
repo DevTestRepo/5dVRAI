@@ -67,10 +67,13 @@
       color: white;
     }
 
-    #FullscreenPrompt img.logo {
-      width: 160px;
-      margin-bottom: 40px;
-    }
+   #FullscreenPrompt img.logo {
+  width: 80%;
+  max-width: 600px;
+  height: auto;
+  margin-bottom: 60px;
+  object-fit: contain;
+}
 
     #fullscreen-prompt-box {
       position: absolute;
@@ -132,15 +135,28 @@
       }
     }
 
-    function goFullscreen() {
-      const elem = document.documentElement;
-      if (elem.requestFullscreen) elem.requestFullscreen();
-      else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
-      else if (elem.mozRequestFullScreen) elem.mozRequestFullScreen();
-      else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+   function goFullscreen() {
+  const elem = document.documentElement;
 
-      fullscreenPrompt.style.display = "none";
-    }
+  // Fullscreen as promise
+  let fullscreenPromise;
+
+  if (elem.requestFullscreen) {
+    fullscreenPromise = elem.requestFullscreen();
+  } else if (elem.webkitRequestFullscreen) {
+    fullscreenPromise = elem.webkitRequestFullscreen();
+  } else if (elem.mozRequestFullScreen) {
+    fullscreenPromise = elem.mozRequestFullScreen();
+  } else if (elem.msRequestFullscreen) {
+    fullscreenPromise = elem.msRequestFullscreen();
+  }
+
+  // ✅ بعد ما يدخل فول سكرين فعليًا
+  Promise.resolve(fullscreenPromise).then(() => {
+    document.getElementById("FullscreenPrompt").style.display = "none";
+  });
+}
+
 
     window.addEventListener("resize", checkOrientation);
     window.addEventListener("orientationchange", checkOrientation);
