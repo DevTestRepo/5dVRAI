@@ -2,11 +2,9 @@
 <html lang="en-us">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>The Frame Run</title>
   <link rel="shortcut icon" href="TemplateData/Icon.png">
   <link rel="stylesheet" href="TemplateData/style.css">
-
   <style>
     html, body {
       margin: 0;
@@ -87,7 +85,8 @@
       width: 100%;
       height: 100%;
       z-index: 10000;
-      background: rgba(0, 0, 0, 0.85);
+      background: url("TemplateData/lg.png") no-repeat center center;
+      background-size: cover;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -95,11 +94,7 @@
       text-align: center;
       color: white;
       font-size: 18px;
-    }
-
-    #RotateWarning img {
-      max-width: 200px;
-      margin-bottom: 20px;
+      backdrop-filter: brightness(0.6);
     }
 
     #RotateWarning button {
@@ -131,8 +126,7 @@
 
   <!-- ✅ Fullscreen Prompt in Landscape -->
   <div id="RotateWarning">
-    <img src="TemplateData/full screen.png" alt="Please rotate your device" />
-    <p>Tap the button below to enter fullscreen and begin.</p>
+    <p>Tap below to start the experience in fullscreen.</p>
     <button onclick="goFullscreen()">Enter Fullscreen</button>
   </div>
 
@@ -160,8 +154,8 @@
     const barFill = document.querySelector("#custom-loading-bar-fill");
     const rotateWarning = document.querySelector("#RotateWarning");
 
+    // ✅ Show only if in landscape
     function checkOrientation() {
-      // ✅ Show prompt only in landscape
       if (window.innerWidth > window.innerHeight) {
         rotateWarning.style.display = "flex";
       } else {
@@ -172,6 +166,23 @@
     window.addEventListener("resize", checkOrientation);
     window.addEventListener("orientationchange", checkOrientation);
     checkOrientation();
+
+    // ✅ Handle Fullscreen and hide background immediately
+    function goFullscreen() {
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      } else if (elem.mozRequestFullScreen) {
+        elem.mozRequestFullScreen();
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+      }
+
+      // ✅ Hide the background overlay immediately
+      rotateWarning.style.display = "none";
+    }
 
     // ✅ Load Unity
     const script = document.createElement("script");
@@ -186,23 +197,6 @@
       });
     };
     document.body.appendChild(script);
-
-    // ✅ Fullscreen handler
-    function goFullscreen() {
-      const elem = document.documentElement;
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-      } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen();
-      } else if (elem.mozRequestFullScreen) {
-        elem.mozRequestFullScreen();
-      } else if (elem.msRequestFullscreen) {
-        elem.msRequestFullscreen();
-      }
-
-      // ✅ Hide prompt
-      rotateWarning.style.display = "none";
-    }
   </script>
 </body>
 </html>
