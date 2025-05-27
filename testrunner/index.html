@@ -120,9 +120,33 @@
 #fullscreen-icon:hover {
   transform: scale(1.1);
 }
-    #RotateWarning button:hover {
+ #RotateWarning button:hover {
       background-color: #ffcc66;
     }
+
+    #fullscreen-prompt {
+  position: absolute;
+  bottom: 60px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  width: 100%;
+  color: white;
+  font-size: 18px;
+  font-family: Arial, sans-serif;
+}
+
+#fullscreen-prompt img {
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+#fullscreen-prompt img:hover {
+  transform: scale(1.1);
+}
   </style>
 </head>
 
@@ -136,8 +160,10 @@
   </div>
 
   <!-- ✅ Fullscreen Prompt in Landscape -->
-  <div id="RotateWarning">
+<div id="fullscreen-prompt">
 <img src="TemplateData/Ficon.png" id="fullscreen-icon" alt="Fullscreen" onclick="goFullscreen()">
+  <span>For the best gaming experience, switch to full screen.</span>
+
   </div>
 
   <!-- ✅ Unity Canvas -->
