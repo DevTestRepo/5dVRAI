@@ -129,10 +129,10 @@
     </div>
   </div>
 
-  <!-- ✅ Rotate Device + Fullscreen Prompt -->
+  <!-- ✅ Fullscreen Prompt in Landscape -->
   <div id="RotateWarning">
     <img src="TemplateData/lg.png" alt="Please rotate your device" />
-    <p>Please rotate your device to landscape.<br>Then tap below to continue.</p>
+    <p>Tap the button below to enter fullscreen and begin.</p>
     <button onclick="goFullscreen()">Enter Fullscreen</button>
   </div>
 
@@ -161,7 +161,8 @@
     const rotateWarning = document.querySelector("#RotateWarning");
 
     function checkOrientation() {
-      if (window.innerHeight > window.innerWidth) {
+      // ✅ Show prompt only in landscape
+      if (window.innerWidth > window.innerHeight) {
         rotateWarning.style.display = "flex";
       } else {
         rotateWarning.style.display = "none";
@@ -186,20 +187,21 @@
     };
     document.body.appendChild(script);
 
-    // ✅ Fullscreen function
+    // ✅ Fullscreen handler
     function goFullscreen() {
       const elem = document.documentElement;
       if (elem.requestFullscreen) {
         elem.requestFullscreen();
-      } else if (elem.mozRequestFullScreen) {
-        elem.mozRequestFullScreen();
       } else if (elem.webkitRequestFullscreen) {
         elem.webkitRequestFullscreen();
+      } else if (elem.mozRequestFullScreen) {
+        elem.mozRequestFullScreen();
       } else if (elem.msRequestFullscreen) {
         elem.msRequestFullscreen();
       }
-      // Hide the warning after entering fullscreen
-      document.getElementById("RotateWarning").style.display = "none";
+
+      // ✅ Hide prompt
+      rotateWarning.style.display = "none";
     }
   </script>
 </body>
