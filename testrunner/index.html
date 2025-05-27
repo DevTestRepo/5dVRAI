@@ -109,6 +109,17 @@
       cursor: pointer;
     }
 
+  #fullscreen-icon {
+  width: 64px;
+  height: 64px;
+  cursor: pointer;
+  margin-top: 160px; /* عدّلها لو تحب */
+  transition: transform 0.2s ease;
+}
+
+#fullscreen-icon:hover {
+  transform: scale(1.1);
+}
     #RotateWarning button:hover {
       background-color: #ffcc66;
     }
@@ -126,7 +137,7 @@
 
   <!-- ✅ Fullscreen Prompt in Landscape -->
   <div id="RotateWarning">
-    <button onclick="goFullscreen()">Enter Fullscreen</button>
+<img src="TemplateData/Ficon.png" id="fullscreen-icon" alt="Fullscreen" onclick="goFullscreen()">
   </div>
 
   <!-- ✅ Unity Canvas -->
