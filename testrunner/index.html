@@ -12,6 +12,7 @@
       height: 100%;
       overflow: hidden;
       font-family: Arial, sans-serif;
+      background-color: black;
     }
 
     #unity-container {
@@ -78,80 +79,53 @@
     }
 
     #RotateWarning {
-      display: none;
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       z-index: 10000;
-      background: url("TemplateData/fullscreen.png") no-repeat center center;
-      background-size: cover;
+      background-color: black;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
       text-align: center;
       color: white;
-      font-size: 18px;
-      backdrop-filter: brightness(0.6);
     }
 
-    #RotateWarning button {
-      margin-top: 100px;
-      padding: 12px 24px;
-      background-color: #FFA500;
-      border: none;
-      color: black;
-      font-weight: bold;
-      font-size: 16px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-  #fullscreen-icon {
-  width: 64px;
-  height: 64px;
-  cursor: pointer;
-  margin-top: 160px; /* عدّلها لو تحب */
-  transition: transform 0.2s ease;
-}
-
-#fullscreen-icon:hover {
-  transform: scale(1.1);
-}
- #RotateWarning button:hover {
-      background-color: #ffcc66;
+    #RotateWarning img.logo {
+      width: 160px;
+      margin-bottom: 40px;
     }
 
     #fullscreen-prompt {
-  position: absolute;
-  bottom: 60px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  justify-content: center;
-  width: 100%;
-  color: white;
-  font-size: 18px;
-  font-family: Arial, sans-serif;
-}
+      position: absolute;
+      bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      justify-content: center;
+      width: 100%;
+      font-size: 18px;
+    }
 
-#fullscreen-prompt img {
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
+    #fullscreen-prompt img {
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
 
-#fullscreen-prompt img:hover {
-  transform: scale(1.1);
-}
+    #fullscreen-prompt img:hover {
+      transform: scale(1.1);
+    }
   </style>
 </head>
 
 <body>
-  <!-- ✅ Splash Screen -->
+
+  <!-- ✅ Splash Loading Screen -->
   <div id="LoadingSplash">
     <div id="loading-text">Loading...</div>
     <div id="custom-loading-bar">
@@ -159,19 +133,21 @@
     </div>
   </div>
 
-  <!-- ✅ Fullscreen Prompt in Landscape -->
-<div id="fullscreen-prompt">
-<img src="TemplateData/Ficon.png" id="fullscreen-icon" alt="Fullscreen" onclick="goFullscreen()">
-  <span>For the best gaming experience, switch to full screen.</span>
-
+  <!-- ✅ Fullscreen Overlay Prompt -->
+  <div id="RotateWarning">
+    <img src="TemplateData/lg.png" alt="Logo" class="logo">
+    <div id="fullscreen-prompt">
+      <img src="TemplateData/Ficon.png" alt="Enter Fullscreen" onclick="goFullscreen()">
+      <span>For the best gaming experience, switch to full screen.</span>
+    </div>
   </div>
 
-  <!-- ✅ Unity Canvas -->
+  <!-- ✅ Unity Game Canvas -->
   <div id="unity-container" class="unity-desktop">
     <canvas id="unity-canvas"></canvas>
   </div>
 
-  <!-- ✅ Unity Loader -->
+  <!-- ✅ Unity Loader Script -->
   <script>
     var buildUrl = "Build";
     var loaderUrl = buildUrl + "/Build.loader.js";
@@ -190,20 +166,6 @@
     const barFill = document.querySelector("#custom-loading-bar-fill");
     const rotateWarning = document.querySelector("#RotateWarning");
 
-    // ✅ Show only if in landscape
-    function checkOrientation() {
-      if (window.innerWidth > window.innerHeight) {
-        rotateWarning.style.display = "flex";
-      } else {
-        rotateWarning.style.display = "none";
-      }
-    }
-
-    window.addEventListener("resize", checkOrientation);
-    window.addEventListener("orientationchange", checkOrientation);
-    checkOrientation();
-
-    // ✅ Handle Fullscreen and hide background immediately
     function goFullscreen() {
       const elem = document.documentElement;
       if (elem.requestFullscreen) {
@@ -216,11 +178,11 @@
         elem.msRequestFullscreen();
       }
 
-      // ✅ Hide the background overlay immediately
+      // ✅ Hide the overlay immediately
       rotateWarning.style.display = "none";
     }
 
-    // ✅ Load Unity
+    // ✅ Unity loading script
     const script = document.createElement("script");
     script.src = loaderUrl;
     script.onload = () => {
