@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <title>The Frame Run</title>
+
+  <!-- PWA Meta Tags -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#000000">
+  <link rel="manifest" href="manifest.json">
+  <link rel="shortcut icon" href="TemplateData/Icon.png">
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background-color: black;
+    }
+
+    #unity-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #unity-canvas {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #RotateWarningScreen {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: black;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #RotateWarningScreen img {
+      max-width: 200px;
+    }
+
+    #FullscreenPrompt {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      z-index: 9998;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+    }
+
+    #FullscreenPrompt img.logo {
+      width: 80%;
+      max-width: 600px;
+      height: auto;
+      margin-bottom: 60px;
+      object-fit: contain;
+    }
+
+    #fullscreen-prompt-box {
+      position: absolute;
+      bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      justify-content: center;
+      width: 100%;
+      font-size: 18px;
+    }
+
+    #fullscreen-prompt-box img {
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    #fullscreen-prompt-box img:hover {
+      transform: scale(1.1);
+    }
+
+    #installBtn {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      padding: 12px 18px;
+      background: white;
+      color: black;
+      border: none;
+      font-size: 16px;
+      display: none;
+      z-index: 10000;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Rotate Warning -->
+  <div id="RotateWarningScreen">
+    <img src="TemplateData/lg.png" alt="Rotate your device">
+  </div>
+
+  <!-- Fullscreen Prompt -->
+  <div id="FullscreenPrompt">
+    <img src="TemplateData/fullscreen.png" alt="Logo" class="logo">
+    <div id="fullscreen-prompt-box">
+      <img src="TemplateData/Ficon.png" alt="Enter Fullscreen" onclick="goFullscreen()">
+      <span>For the best gaming experience, switch to full screen.</span>
+    </div>
+  </div>
+
+  <!-- Unity Canvas -->
+  <div id="unity-container">
+    <canvas id="unity-canvas"></canvas>
+  </div>
+
+  <!-- Desktop PWA Install Button -->
+  <button id="installBtn">Install App</button>
+
+  <script>
+    const rotateScreen = document.getElementById("RotateWarningScreen");
+    const fullscreenPrompt = document.getElementById("FullscreenPrompt");
+    const installBtn = document.getElementById("installBtn");
+    let deferredPrompt;
+
+    function checkOrientation() {
+      if (window.innerHeight > window.innerWidth) {
+        rotateScreen.style.display = "flex";
+        fullscreenPrompt.style.display = "none";
+      } else {
+        rotateScreen.style.display = "none";
+        fullscreenPrompt.style.display = "flex";
+      }
+    }
+
+    function goFullscreen() {
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      } else if (elem.mozRequestFullScreen) {
+        elem.mozRequestFullScreen();
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+      }
+    }
+
+    document.addEventListener("fullscreenchange", () => {
+      if (document.fullscreenElement) {
+        fullscreenPrompt.style.display = "none";
+      }
+    });
+
+    window.addEventListener("resize", checkOrientation);
+    window.addEventListener("orientationchange", checkOrientation);
+    checkOrientation();
+
+    // Unity Loader
+    var buildUrl = "Build";
+    var loaderUrl = buildUrl + "/Build.loader.js";
+    var config = {
+      dataUrl: buildUrl + "/Build.data",
+      frameworkUrl: buildUrl + "/Build.framework.js",
+      codeUrl: buildUrl + "/Build.wasm",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "DefaultCompany",
+      productName: "Endless Runner",
+      productVersion: "0.1",
+    };
+
+    const canvas = document.querySelector("#unity-canvas");
+    const script = document.createElement("script");
+    script.src = loaderUrl;
+    script.onload = () => {
+      createUnityInstance(canvas, config, (progress) => {}).then((unityInstance) => {
+      }).catch((message) => {
+        alert(message);
+      });
+    };
+    document.body.appendChild(script);
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+
+    // Desktop PWA install prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'block';
+    });
+
+    installBtn.addEventListener('click', () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+          }
+          deferredPrompt = null;
+          installBtn.style.display = 'none';
+        });
+      }
+    });
+  </script>
+</body>
+</html>
