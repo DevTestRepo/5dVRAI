@@ -5,6 +5,7 @@
     <type fullname="Coins" preserve="all" />
     <type fullname="CollectibleManager" preserve="all" />
     <type fullname="CustomKeyboard" preserve="all" />
+    <type fullname="disableobject" preserve="all" />
     <type fullname="EGOBlock" preserve="all" />
     <type fullname="FirstGearGames.SmoothCameraShaker.CameraShaker" preserve="all" />
     <type fullname="FirstGearGames.SmoothCameraShaker.ShakeData" preserve="all" />
