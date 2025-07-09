@@ -3,7 +3,10 @@
 <head>
   <meta charset="utf-8">
   <title>The Frame Run</title>
+  <link rel="manifest" href="manifest.json">
   <link rel="shortcut icon" href="TemplateData/Icon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+
   <style>
     html, body {
       margin: 0;
@@ -11,10 +14,11 @@
       height: 100%;
       overflow: hidden;
       font-family: Arial, sans-serif;
-      background-color: black;
+     padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+
     }
 
-    #unity-container {
+    #unity-container, #unity-canvas {
       width: 100%;
       height: 100%;
       position: absolute;
@@ -22,15 +26,6 @@
       left: 0;
     }
 
-    #unity-canvas {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-
-    /* 🌐 شاشة الروتيشن */
     #RotateWarningScreen {
       display: none;
       position: absolute;
@@ -49,7 +44,6 @@
       max-width: 200px;
     }
 
-    /* 🟨 شاشة الفول سكرين */
     #FullscreenPrompt {
       display: none;
       position: absolute;
@@ -57,7 +51,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: #000; /* أو حط صورة */
+      background-color: #000;
       z-index: 9998;
       display: flex;
       flex-direction: column;
@@ -67,13 +61,13 @@
       color: white;
     }
 
-   #FullscreenPrompt img.logo {
-  width: 80%;
-  max-width: 600px;
-  height: auto;
-  margin-bottom: 60px;
-  object-fit: contain;
-}
+    #FullscreenPrompt .logo {
+      width: 80%;
+      max-width: 600px;
+      height: auto;
+      margin-bottom: 60px;
+      object-fit: contain;
+    }
 
     #fullscreen-prompt-box {
       position: absolute;
@@ -96,76 +90,267 @@
     #fullscreen-prompt-box img:hover {
       transform: scale(1.1);
     }
+
+    #installBtn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: white;
+      color: black;
+      border: none;
+      padding: 10px 16px;
+      font-size: 16px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      cursor: pointer;
+      z-index: 9999;
+      display: none;
+    }
+
+    #installBtn img {
+      height: 20px;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+   #LoadingSplash {
+      position: fixed;
+      inset: 0;
+      z-index: 9997;
+      background-color: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      overflow: hidden;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+
+    #loading-image {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    #loading-text {
+      position: absolute;
+      bottom: 150px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 16px;
+      color: white;
+      text-shadow: 1px 1px 2px black;
+    }
+
+    #custom-loading-bar {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40%;
+      height: 20px;
+      background-color: #1f1f1f;
+      border-radius: 12px;
+      border: 2px solid white;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+    }
+
+    #custom-loading-bar-fill {
+      width: 0%;
+      height: 100%;
+      background-color: #FFA500;
+      border-radius: 12px 0 0 12px;
+      transition: width 0.3s ease;
+    }
+
+  .overlay-title {
+  position: absolute;
+  z-index: 10;
+  top: 4vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  height: auto;
+  max-width: 90%;
+  max-height: 60vh; /* ensures it never exceeds screen height */
+}
+    .overlay-logo {
+      position: absolute;
+      bottom: 2vh;
+      right: 2vw;
+      width: 60px;
+      height: auto;
+      z-index: 10;
+    }
+
+   .background-img {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  object-position: center;
+}
+
+ 
+
+  .overlay-logo {
+    width: 12vw;
+    max-width: 40px;
+  }
+}
   </style>
 </head>
 
 <body>
 
-  <!-- ✅ شاشة الروتيشن Portrait فقط -->
+  <!-- ⬅ Background Image -->
+ 
+
+  <!-- 🔄 Rotate Prompt -->
   <div id="RotateWarningScreen">
     <img src="TemplateData/lg.png" alt="Rotate your device">
   </div>
 
-  <!-- ✅ شاشة الفول سكرين Landscape فقط -->
+  <!-- 🔲 Fullscreen Prompt -->
   <div id="FullscreenPrompt">
     <img src="TemplateData/fullscreen.png" alt="Logo" class="logo">
     <div id="fullscreen-prompt-box">
-      <img src="TemplateData/Ficon.png" alt="Enter Fullscreen" onclick="goFullscreen()">
-      <span>For the best gaming experience, switch to full screen.</span>
+      <div style="display: flex; flex-direction: column; align-items: center;">
+        <p style="margin: 0 0 8px 0;">For the best gaming experience, switch to full screen.</p>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span>Click Here</span>
+          <img id="fullscreenBtn" src="TemplateData/Ficon.png" alt="Enter Fullscreen">
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- ✅ Unity Canvas -->
+  <!-- ⏳ Loading Splash -->
+  <div id="LoadingSplash">
+   <img class="background-img" src="TemplateData/background.png" alt="Background" />
+
+  <!-- 👓 Title Image -->
+  <img class="overlay-title" src="TemplateData/title.png" alt="The Frame Run" />
+
+  <!-- 🔻 Logo Bottom-Right -->
+  <img class="overlay-logo" src="TemplateData/logo.png" alt="M logo" />
+    <div id="loading-text"></div>
+    <div id="custom-loading-bar">
+      <div id="custom-loading-bar-fill"></div>
+    </div>
+  </div>
+
+  <!-- Unity Container -->
   <div id="unity-container">
     <canvas id="unity-canvas"></canvas>
   </div>
 
-  <!-- ✅ Unity Loader Script -->
+  <button id="installBtn">
+    <img src="TemplateData/install-icon.png" alt="Install">Install The App
+  </button>
+
   <script>
+
     const rotateScreen = document.getElementById("RotateWarningScreen");
     const fullscreenPrompt = document.getElementById("FullscreenPrompt");
+    const splash = document.getElementById("LoadingSplash");
+    const barFill = document.getElementById("custom-loading-bar-fill");
+    const canvas = document.getElementById("unity-canvas");
+    const installBtn = document.getElementById("installBtn");
+    const fullscreenBtn = document.getElementById("fullscreenBtn");
+
+    let initialized = false;
+    let deferredPrompt;
+
+    function isIOS() {
+      return /iphone|ipad|ipod/i.test(navigator.userAgent);
+    }
 
     function checkOrientation() {
       if (window.innerHeight > window.innerWidth) {
-        rotateScreen.style.display = "flex";       // Show rotate
-        fullscreenPrompt.style.display = "none";   // Hide fullscreen
+        rotateScreen.style.display = "flex";
+        fullscreenPrompt.style.display = "none";
       } else {
-        rotateScreen.style.display = "none";       // Hide rotate
-        fullscreenPrompt.style.display = "flex";   // Show fullscreen
+        rotateScreen.style.display = "none";
+        fullscreenPrompt.style.display = document.fullscreenElement ? "none" : "flex";
       }
     }
 
-   function goFullscreen() {
-  const elem = document.documentElement;
+    function initializeUnity() {
+      fullscreenPrompt.style.display = "none";
+      splash.style.display = "block";
+      createUnityInstance(canvas, config, (progress) => {
+        barFill.style.width = (progress * 100) + "%";
+      }).then((unityInstance) => {
+        splash.style.display = "none";
+        initialized = true;
+      }).catch((message) => {
+        alert(message);
+      });
+    }
 
-  // Fullscreen as promise
-  let fullscreenPromise;
+    fullscreenBtn.addEventListener("click", () => {
+      const elem = document.documentElement;
+      fullscreenPrompt.style.display = "none";
+      if (!initialized) initializeUnity();
+      if (isIOS()) return;
+      if (elem.requestFullscreen) elem.requestFullscreen();
+      else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+      else if (elem.mozRequestFullScreen) elem.mozRequestFullScreen();
+      else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+    });
 
-  if (elem.requestFullscreen) {
-    fullscreenPromise = elem.requestFullscreen();
-  } else if (elem.webkitRequestFullscreen) {
-    fullscreenPromise = elem.webkitRequestFullscreen();
-  } else if (elem.mozRequestFullScreen) {
-    fullscreenPromise = elem.mozRequestFullScreen();
-  } else if (elem.msRequestFullscreen) {
-    fullscreenPromise = elem.msRequestFullscreen();
-  }
+    function onFullscreenChange() {
+      const isFullscreen = document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.msFullscreenElement;
+      if (isFullscreen) fullscreenPrompt.style.display = "none";
+    }
 
-  // ✅ بعد ما يدخل فول سكرين فعليًا
-  Promise.resolve(fullscreenPromise).then(() => {
-    document.getElementById("FullscreenPrompt").style.display = "none";
-  });
-}
-
-
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", onFullscreenChange);
+    document.addEventListener("mozfullscreenchange", onFullscreenChange);
+    document.addEventListener("MSFullscreenChange", onFullscreenChange);
     window.addEventListener("resize", checkOrientation);
     window.addEventListener("orientationchange", checkOrientation);
     checkOrientation();
 
-    // Unity loader
-    var buildUrl = "Build";
-    var loaderUrl = buildUrl + "/Build.loader.js";
-    var config = {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+    });
+
+    installBtn.addEventListener('click', () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted install');
+          } else {
+            console.log('User dismissed install');
+          }
+          deferredPrompt = null;
+          installBtn.style.display = 'none';
+        });
+      }
+    });
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log("✅ Service Worker registered"))
+        .catch((err) => console.error("❌ SW failed", err));
+    }
+
+    const buildUrl = "Build";
+    const loaderUrl = buildUrl + "/Build.loader.js";
+    const config = {
       dataUrl: buildUrl + "/Build.data",
       frameworkUrl: buildUrl + "/Build.framework.js",
       codeUrl: buildUrl + "/Build.wasm",
@@ -175,18 +360,8 @@
       productVersion: "0.1",
     };
 
-    const canvas = document.querySelector("#unity-canvas");
     const script = document.createElement("script");
     script.src = loaderUrl;
-    script.onload = () => {
-      createUnityInstance(canvas, config, (progress) => {
-        // optional loading bar here
-      }).then((unityInstance) => {
-        // Unity ready
-      }).catch((message) => {
-        alert(message);
-      });
-    };
     document.body.appendChild(script);
   </script>
 </body>
