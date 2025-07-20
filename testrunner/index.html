@@ -296,6 +296,8 @@
     }
 
     fullscreenBtn.addEventListener("click", () => {
+      location.reload(true); // 🔄 Reloads the page first
+
       const elem = document.documentElement;
       fullscreenPrompt.style.display = "none";
       if (!initialized) initializeUnity();
