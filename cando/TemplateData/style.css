@@ -1,8 +1,43 @@
-body { padding: 0; margin: 0 }
-#unity-container { position: fixed; width: 100%; height: 100%; }
-#unity-canvas { width: 100%; height: 100%; background: #F9B924 }
-#unity-loading-bar { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: none }
-#unity-logo { width: 154px; height: 130px; background: url('unity-logo-dark.png') no-repeat center }
-#unity-progress-bar-empty { margin-left: auto; margin-right: auto; width: 141px; height: 18px; margin-top: 10px; background: url('progress-bar-empty-dark.png') no-repeat center }
-#unity-progress-bar-full { width: 0%; height: 18px; margin-top: 10px; background: url('progress-bar-full-dark.png') no-repeat center }
-#unity-warning { position: absolute; left: 50%; top: 5%; transform: translate(-50%); background: white; padding: 10px; display: none }
+/* Fill viewport */
+body { padding: 0; margin: 0; }
+#unity-container { position: fixed; inset: 0; }
+#unity-canvas { width: 100%; height: 100%; background: #F9B924; display: block; }
+
+/* Center the loader and make it responsive */
+#unity-loading-bar{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  display:flex; flex-direction:column; align-items:center; gap:16px;
+}
+
+/* === LOGO ===
+   Use your transparent CanDo logo file here (rename or change the url) */
+#unity-logo{
+  width:min(60vw, 560px);        /* responsive width with a sensible max */
+  aspect-ratio: 855 / 432;       /* keep your logo’s proportions */
+  background: url('cando-logo.png') no-repeat center / contain;
+}
+
+/* === PROGRESS BAR (track) === */
+#unity-progress-bar-empty{
+  width:min(50vw, 440px);
+  height:clamp(10px, 1.6vw, 18px);
+  border-radius:999px;
+  background: rgba(255,255,255,0.25);   /* subtle track */
+  outline:2px solid #fff;               /* white border like your mock */
+  overflow:hidden;                      /* round the fill too */
+  margin:0 auto;
+}
+
+/* === PROGRESS BAR (fill) === */
+#unity-progress-bar-full{
+  width:0%;
+  height:100%;
+  background:#fff;                      /* white fill */
+  border-radius:inherit;
+}
+
+/* Optional: warning ribbon */
+#unity-warning{
+  position:absolute; left:50%; top:5%; transform:translateX(-50%);
+  background:white; padding:10px; display:none;
+}
