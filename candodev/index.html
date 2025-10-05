@@ -1,215 +1,223 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity Web Player | AI_Speech_Test</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css">
-    <link rel="manifest" href="manifest.webmanifest">
-  
-    <!-- MICROPHONE PRO START -->
-    <script src='./microphone.js'></script>
-    <!-- MICROPHONE PRO END -->
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Unity Web Player | AI_Speech_Test</title>
+  <link rel="shortcut icon" href="TemplateData/favicon.ico" />
+  <link rel="stylesheet" href="TemplateData/style.css" />
+  <link rel="manifest" href="manifest.webmanifest" />
 
+  <!-- MICROPHONE PRO START -->
+  <script src="./microphone.js"></script>
+  <!-- MICROPHONE PRO END -->
 
-    <style>
+  <style>
     html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
+      margin: 0; padding: 0; height: 100%; overflow: hidden;
       font-family: Arial, sans-serif;
-     padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
-
+      padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0)
+               env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+      background: #000;
     }
-
     #unity-container, #unity-canvas {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
+      width: 100%; height: 100%;
+      position: absolute; top: 0; left: 0;
     }
-     #FullscreenPrompt {
-      display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #000;
+
+    /* Fullscreen Prompt — visible first */
+    #FullscreenPrompt {
+      position: absolute; inset: 0;
+      background: #000;
       z-index: 9998;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      color: white;
+      color: #fff;
     }
-
     #FullscreenPrompt .logo {
-      width: 80%;
-      max-width: 600px;
-      height: auto;
-      margin-bottom: 60px;
-      object-fit: contain;
+      width: 80%; max-width: 600px; height: auto; margin-bottom: 60px; object-fit: contain;
     }
-
     #fullscreen-prompt-box {
-      position: absolute;
-      bottom: 40px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      justify-content: center;
-      width: 100%;
-      font-size: 18px;
+      position: absolute; bottom: 40px; width: 100%;
+      display: flex; align-items: center; justify-content: center; gap: 16px; font-size: 18px;
     }
-
     #fullscreen-prompt-box img {
-      width: 48px;
-      height: 48px;
-      cursor: pointer;
-      transition: transform 0.2s ease;
+      width: 48px; height: 48px; cursor: pointer; transition: transform .2s ease;
     }
+    #fullscreen-prompt-box img:hover { transform: scale(1.1); }
 
-    #fullscreen-prompt-box img:hover {
-      transform: scale(1.1);
+    /* Loading Splash (hidden until we start loading Unity) */
+    #LoadingSplash {
+      position: absolute; inset: 0;
+      display: none; /* shown when we begin loading */
+      align-items: center; justify-content: center; flex-direction: column;
+    }
+    #LoadingSplash .background-img {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    }
+    #LoadingSplash .overlay-title { position: absolute; top: 6%; width: min(80%, 900px); height: auto; }
+    #LoadingSplash .overlay-logo  { position: absolute; right: 24px; bottom: 24px; width: 120px; height: auto; }
+    #custom-loading-bar {
+      position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%);
+      width: min(80%, 600px); height: 10px; border: 1px solid #fff;
+      background: rgba(255,255,255,.1);
+    }
+    #custom-loading-bar-fill { width: 0%; height: 100%; background: #fff; }
+    #loading-text {
+      position: absolute; bottom: calc(10% + 24px); left: 50%; transform: translateX(-50%);
+      color: #fff; font-size: 14px;
     }
   </style>
 </head>
-  <body>
+<body>
 
-    <!-- 🔲 Fullscreen Prompt -->
+  <!-- 🔲 Fullscreen Prompt (first screen) -->
   <div id="FullscreenPrompt">
-    <img src="TemplateData/fullscreen.png" alt="Logo" class="logo">
+    <img src="TemplateData/fullscreen.png" alt="Logo" class="logo" />
     <div id="fullscreen-prompt-box">
-      <div style="display: flex; flex-direction: column; align-items: center;">
-        <p style="margin: 0 0 8px 0;">For the best gaming experience, switch to full screen.</p>
-        <div style="display: flex; align-items: center; gap: 10px;">
+      <div style="display:flex; flex-direction:column; align-items:center;">
+        <p style="margin:0 0 8px 0;">For the best gaming experience, switch to full screen.</p>
+        <div style="display:flex; align-items:center; gap:10px;">
           <span>Click Here</span>
-          <img id="fullscreenBtn" src="TemplateData/Ficon.png" alt="Enter Fullscreen">
+          <img id="fullscreenBtn" src="TemplateData/Ficon.png" alt="Enter Fullscreen" />
         </div>
       </div>
     </div>
   </div>
-      <!-- ⏳ Loading Splash -->
+
+  <!-- ⏳ Loading Splash (shown while Unity loads) -->
   <div id="LoadingSplash">
-   <img class="background-img" src="TemplateData/background.png" alt="Background" />
-
-  <!-- 👓 Title Image -->
-  <img class="overlay-title" src="TemplateData/title.png" alt="The Frame Run" />
-
-  <!-- 🔻 Logo Bottom-Right -->
-  <img class="overlay-logo" src="TemplateData/logo.png" alt="M logo" />
-    <div id="loading-text"></div>
-    <div id="custom-loading-bar">
-      <div id="custom-loading-bar-fill"></div>
-    </div>
+    <img class="background-img" src="TemplateData/background.png" alt="Background" />
+    <img class="overlay-title"  src="TemplateData/title.png"  alt="The Frame Run" />
+    <img class="overlay-logo"   src="TemplateData/logo.png"   alt="M logo" />
+    <div id="loading-text">Loading…</div>
+    <div id="custom-loading-bar"><div id="custom-loading-bar-fill"></div></div>
   </div>
 
   <!-- Unity Container -->
   <div id="unity-container">
     <canvas id="unity-canvas"></canvas>
   </div>
-  
-    <script>
 
-     const fullscreenBtn = document.getElementById("fullscreenBtn");
-    const canvas = document.getElementById("unity-canvas");
-    const splash = document.getElementById("LoadingSplash");
-    const fullscreenPrompt = document.getElementById("FullscreenPrompt");
-    const barFill = document.getElementById("custom-loading-bar-fill");
-    let initialized = false;
-    let deferredPrompt;
-   function isIOS() {
-      return /iphone|ipad|ipod/i.test(navigator.userAgent);
+  <script>
+    // --- Helpers
+    function isIOS() { return /iphone|ipad|ipod/i.test(navigator.userAgent); }
+
+    // Unity banner handler (avoid undefined reference)
+    function unityShowBanner(msg, type) {
+      console[type === 'error' ? 'error' : 'log']('[Unity] ' + msg);
     }
 
-   function initializeUnity() {
-      fullscreenPrompt.style.display = "none";
-      splash.style.display = "block";
-      createUnityInstance(canvas, config, (progress) => {
-        barFill.style.width = (progress * 100) + "%";
-      }).then((unityInstance) => {
-        splash.style.display = "none";
-        initialized = true;
-      }).catch((message) => {
-        alert(message);
-      });
+    // Register Service Worker (optional)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('✅ Service Worker registered'))
+        .catch(err => console.error('❌ SW failed', err));
     }
-      fullscreenBtn.addEventListener("click", () => {
+
+    // Elements
+    const fullscreenBtn   = document.getElementById('fullscreenBtn');
+    const canvas          = document.getElementById('unity-canvas');
+    const splash          = document.getElementById('LoadingSplash');
+    const fullscreenView  = document.getElementById('FullscreenPrompt');
+    const barFill         = document.getElementById('custom-loading-bar-fill');
+    const loadingText     = document.getElementById('loading-text');
+
+    // Unity build config
+    const buildUrl  = 'Build';
+    const loaderUrl = buildUrl + '/Build.loader.js';
+    const config = {
+      arguments: [],
+      dataUrl:        buildUrl + '/Build.data',
+      frameworkUrl:   buildUrl + '/Build.framework.js',
+      codeUrl:        buildUrl + '/Build.wasm',
+      streamingAssetsUrl: 'StreamingAssets',
+      companyName: 'DefaultCompany',
+      productName: 'AI_Speech_Test',
+      productVersion: '0.1',
+      showBanner: unityShowBanner,
+      // matchWebGLToCanvasSize: true, // default
+    };
+
+    // Ensure loader is ready before any createUnityInstance calls
+    let loaderReady = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = loaderUrl;
+      s.onload = () => resolve();
+      s.onerror = (e) => reject(new Error('Failed to load Unity loader'));
+      document.body.appendChild(s);
+    });
+
+    let unityStarted = false;
+
+    async function initializeUnity() {
+      if (unityStarted) return;
+      unityStarted = true;
+
+      // Hide prompt, show splash
+      fullscreenView.style.display = 'none';
+      splash.style.display = 'flex';
+
+      try {
+        // Wait for loader to be ready so createUnityInstance exists
+        await loaderReady;
+
+        // createUnityInstance comes from the loader script (global)
+        const instance = await createUnityInstance(canvas, config, (progress) => {
+          const pct = Math.round(progress * 100);
+          barFill.style.width = pct + '%';
+          loadingText.textContent = 'Loading… ' + pct + '%';
+        });
+
+        // Hide splash when ready
+        splash.style.display = 'none';
+        console.log('✅ Unity instance started', instance);
+
+      } catch (err) {
+        console.error(err);
+        alert('Failed to start the game. See console for details.');
+        // Show prompt again to let the user retry
+        splash.style.display = 'none';
+        fullscreenView.style.display = 'flex';
+        unityStarted = false;
+      }
+    }
+
+    // Fullscreen flow
+    async function requestFullscreenIfPossible() {
       const elem = document.documentElement;
-      fullscreenPrompt.style.display = "none";
-      if (!initialized) initializeUnity();
-      if (isIOS()) return;
-      if (elem.requestFullscreen) elem.requestFullscreen();
-      else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
-      else if (elem.mozRequestFullScreen) elem.mozRequestFullScreen();
-      else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+      // iOS Safari doesn’t support programmatic fullscreen; still initialize the game
+      if (!isIOS()) {
+        try {
+          if (elem.requestFullscreen) await elem.requestFullscreen();
+          else if (elem.webkitRequestFullscreen) await elem.webkitRequestFullscreen();
+          else if (elem.mozRequestFullScreen) await elem.mozRequestFullScreen();
+          else if (elem.msRequestFullscreen) await elem.msRequestFullscreen();
+        } catch (e) {
+          console.warn('Fullscreen request was blocked:', e);
+        }
+      }
+    }
+
+    fullscreenBtn.addEventListener('click', async () => {
+      await requestFullscreenIfPossible();
+      initializeUnity();
     });
 
     function onFullscreenChange() {
-      const isFullscreen = document.fullscreenElement ||
-        document.webkitFullscreenElement ||
-        document.mozFullScreenElement ||
-        document.msFullscreenElement;
-      if (isFullscreen) fullscreenPrompt.style.display = "none";
+      const isFs = document.fullscreenElement ||
+                   document.webkitFullscreenElement ||
+                   document.mozFullScreenElement ||
+                   document.msFullscreenElement;
+      if (isFs) fullscreenView.style.display = 'none';
     }
-     document.addEventListener("fullscreenchange", onFullscreenChange);
-    document.addEventListener("webkitfullscreenchange", onFullscreenChange);
-    document.addEventListener("mozfullscreenchange", onFullscreenChange);
-    document.addEventListener("MSFullscreenChange", onFullscreenChange);
- if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log("✅ Service Worker registered"))
-        .catch((err) => console.error("❌ SW failed", err));
-    }
-      var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/Build.loader.js";
-      var config = {
-        arguments: [],
-        dataUrl: buildUrl + "/Build.data",
-        frameworkUrl: buildUrl + "/Build.framework.js",
-        codeUrl: buildUrl + "/Build.wasm",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "DefaultCompany",
-        productName: "AI_Speech_Test",
-        productVersion: "0.1",
-        showBanner: unityShowBanner,
-      };
-
-      // By default Unity keeps WebGL canvas render target size matched with
-      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
-      // Set this to false if you want to decouple this synchronization from
-      // happening inside the engine, and you would instead like to size up
-      // the canvas DOM size and WebGL render target sizes yourself.
-      // config.matchWebGLToCanvasSize = false;
-
-      /*if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
-      }/*
-
-     /* loadingBar.style.display = "block";
-
-  
-     /* script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-          progressBarFull.style.width = 100 * progress + "%";
-        }).then((unityInstance) => {
-          loadingBar.style.display = "none";
-        }).catch((message) => {
-          alert(message);
-        });
-      };*/
-      var script = document.createElement("script");
-      script.src = loaderUrl;
-      document.body.appendChild(script);
-    </script>
-  </body>
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+    document.addEventListener('mozfullscreenchange', onFullscreenChange);
+    document.addEventListener('MSFullscreenChange', onFullscreenChange);
+  </script>
+</body>
 </html>
