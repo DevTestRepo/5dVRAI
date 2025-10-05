@@ -110,13 +110,32 @@
           navigator.serviceWorker.register("ServiceWorker.js");
         }
       });
+    const fullscreenBtn = document.getElementById("fullscreenBtn");
+ fullscreenBtn.addEventListener("click", () => {
+      const elem = document.documentElement;
+      fullscreenPrompt.style.display = "none";
+      if (!initialized) initializeUnity();
+      if (isIOS()) return;
+      if (elem.requestFullscreen) elem.requestFullscreen();
+      else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+      else if (elem.mozRequestFullScreen) elem.mozRequestFullScreen();
+      else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+    });
+     function onFullscreenChange() {
+      const isFullscreen = document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.msFullscreenElement;
+      if (isFullscreen) fullscreenPrompt.style.display = "none";
+    }
 
+    document.addEventListener("fullscreenchange", onFullscreenChange);
       var container = document.querySelector("#unity-container");
       var canvas = document.querySelector("#unity-canvas");
       var loadingBar = document.querySelector("#unity-loading-bar");
       var progressBarFull = document.querySelector("#unity-progress-bar-full");
       var warningBanner = document.querySelector("#unity-warning");
-
+      
       // Shows a temporary message banner/ribbon for a few seconds, or
       // a permanent error message on top of the canvas if type=='error'.
       // If type=='warning', a yellow highlight color is used.
