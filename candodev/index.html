@@ -58,7 +58,6 @@
     #LoadingSplash .background-img {
       position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
     }
-    #LoadingSplash .overlay-title { position: absolute; top: 6%; width: min(80%, 900px); height: auto; }
     #custom-loading-bar {
       position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%);
       width: min(80%, 600px); height: 10px; border: 1px solid #fff;
@@ -124,16 +123,17 @@
       transition: width 0.3s ease;
     }
 
-  .overlay-title {
+  :root { --title-offset: 18vh; }  /* tweak this number: 12–24vh */
+
+#LoadingSplash .overlay-title {
   position: absolute;
   z-index: 10;
-  top: 4vh;
+  top: calc(var(--title-offset) + env(safe-area-inset-top, 0px));
   left: 50%;
   transform: translateX(-50%);
-  width: auto;
+  width: min(90vw, 900px);
   height: auto;
-  max-width: 90%;
-  max-height: 60vh; /* ensures it never exceeds screen height */
+  max-height: 60vh;
 }
    .background-img {
   position: fixed;
