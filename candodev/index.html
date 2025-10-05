@@ -120,7 +120,7 @@
     #custom-loading-bar-fill {
       width: 0%;
       height: 100%;
-      background-color: #000000;
+      background-color: #ffffff;
       border-radius: 12px 0 0 12px;
       transition: width 0.3s ease;
     }
@@ -136,14 +136,12 @@
   max-width: 90%;
   max-height: 60vh; /* ensures it never exceeds screen height */
 }
-    .overlay-logo {
-      position: absolute;
-      bottom: 2vh;
-      right: 2vw;
-      width: 60px;
-      height: auto;
-      z-index: 10;
-    }
+   .overlay-logo {
+  position: static;            /* no absolute */
+  z-index: 10;
+  width: clamp(80px, 12vw, 140px);
+  height: auto;
+}
 
    .background-img {
   position: fixed;
@@ -156,12 +154,7 @@
   background-color:#f0cd0a;
 }
 
-  .overlay-logo {
-    width: 12vw;
-    max-width: 40px;
-     align-items: center;
-      justify-content: center;
-  }
+
   </style>
 </head>
 <body>
