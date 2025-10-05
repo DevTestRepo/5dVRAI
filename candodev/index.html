@@ -11,8 +11,89 @@
     <!-- MICROPHONE PRO START -->
     <script src='./microphone.js'></script>
     <!-- MICROPHONE PRO END -->
+
+
+    <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+     padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+
+    }
+
+    #unity-container, #unity-canvas {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+     #FullscreenPrompt {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      z-index: 9998;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+    }
+
+    #FullscreenPrompt .logo {
+      width: 80%;
+      max-width: 600px;
+      height: auto;
+      margin-bottom: 60px;
+      object-fit: contain;
+    }
+
+    #fullscreen-prompt-box {
+      position: absolute;
+      bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      justify-content: center;
+      width: 100%;
+      font-size: 18px;
+    }
+
+    #fullscreen-prompt-box img {
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    #fullscreen-prompt-box img:hover {
+      transform: scale(1.1);
+    }
+  </style>
 </head>
   <body>
+
+    <!-- 🔲 Fullscreen Prompt -->
+  <div id="FullscreenPrompt">
+    <img src="TemplateData/fullscreen.png" alt="Logo" class="logo">
+    <div id="fullscreen-prompt-box">
+      <div style="display: flex; flex-direction: column; align-items: center;">
+        <p style="margin: 0 0 8px 0;">For the best gaming experience, switch to full screen.</p>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span>Click Here</span>
+          <img id="fullscreenBtn" src="TemplateData/Ficon.png" alt="Enter Fullscreen">
+        </div>
+      </div>
+    </div>
+  </div>
     <div id="unity-container">
       <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
       <div id="unity-loading-bar">
