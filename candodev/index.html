@@ -71,18 +71,19 @@
       color: #fff; font-size: 14px;
     }
 
-     #LoadingSplash {
-      position: fixed;
-      inset: 0;
-      z-index: 9997;
-      background-color:  #ffd900;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      overflow: hidden;
-      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-    }
+    #LoadingSplash {
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  background-color: #ffd900;
+  display: none;                      /* hidden until JS shows it */
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  overflow: hidden;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+           env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
 
     #loading-image {
       position: absolute;
@@ -125,16 +126,15 @@
       transition: width 0.3s ease;
     }
 
-  .overlay-title {
+.overlay-title {
   position: absolute;
   z-index: 10;
-  top: 4vh;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  width: auto;
+  transform: translate(-50%, -50%);  /* center on both axes */
+  width: min(90vw, 900px);
   height: auto;
-  max-width: 90%;
-  max-height: 60vh; /* ensures it never exceeds screen height */
+  max-height: 60vh;                   /* keep it responsive */
 }
    .overlay-logo {
   position: static;            /* no absolute */
