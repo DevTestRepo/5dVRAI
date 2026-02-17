@@ -487,7 +487,7 @@ window.GL_Connect = async function () {
         const sysEl = $("#sys");
         const sysText = (sysEl?.value || "You are a friendly, concise assistant for realtime avatars. Keep answers short unless asked.").trim();
         const voiceEl = $("#voice");
-        const voiceName = (voiceEl?.value || "Puck");
+        const voiceName = (voiceEl?.value || "Leda");
 
         await audioCtx.resume();
 
