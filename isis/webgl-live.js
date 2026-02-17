@@ -491,7 +491,7 @@ window.GL_Connect = async function () {
 
         await audioCtx.resume();
 
-        const r = await fetch("/api/gemini-live-ephemeral", {
+        const r = await fetch("https://www.5d-ai-hub.com/api/gemini-live-ephemeral", {
             method: "POST", headers: { "content-type": "application/json" },
             body: JSON.stringify({ voiceName, mode: "pcm-burst" })
         });
