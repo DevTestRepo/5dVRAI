@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>ISis Live AI</title>
+  <link rel="shortcut icon" href="TemplateData/favicon.ico">
+  <link rel="stylesheet" href="TemplateData/style.css">
+  <style>
+    #loading-spinner {
+      width: 32px;
+      height: 32px;
+      animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0)
+      }
+
+      100% {
+        transform: rotate(360deg)
+      }
+    }
+
+    .noselect {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    #unity-loading-msg {
+      position: fixed;
+      z-index: 9999;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0b0b0b;
+      color: #fff;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-size: 14px;
+    }
+
+    #loading-panel {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .06);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, .08);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+      background-color: #1e5f62;
+    }
+
+    #volume-bar {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 9;
+      background: rgba(0, 0, 0, .5);
+      color: #fff;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font: 12px system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      display: none;
+      gap: 6px;
+      align-items: center;
+    }
+
+    #volume-slider {
+      width: 160px;
+      accent-color: #00d1ff;
+    }
+  </style>
+
+  <!-- If you use your Microphone Pro helper, keep it -->
+
+    <!-- MICROPHONE PRO START -->
+    <script src='./microphone.js'></script>
+    <!-- MICROPHONE PRO END -->
+</head>
+
+<body class="noselect" style="background-color: rgb(22, 81, 90);">
+  <div id="unity-container" class="unity-desktop" width="360" height="540">
+    <canvas id="unity-canvas" width="360" height="540" tabindex="-1"></canvas>
+
+    <!-- Hide Unity default loading bar -->
+    <div id="unity-loading-bar" style="display:none;">
+      <div id="unity-logo"></div>
+      <div id="unity-progress-bar-empty">
+        <div id="unity-progress-bar-full"></div>
+      </div>
+    </div>
+
+    <!-- Custom loading screen -->
+    <div id="unity-loading-msg" style="background-color: rgb(22, 81, 90);">
+      <img src="LogoOnly_W.png" alt="Isis AI Logo" style="width:96px; margin-right: 20px;">
+      <div id="loading-panel">
+        <img id="loading-spinner" src="loading.png" alt="Loading...">
+        <div id="progressText">Loading…</div>
+      </div>
+    </div>
+
+    <div id="unity-warning"></div>
+    <div id="unity-footer">
+      <div id="unity-logo-title-footer"></div>
+      <div id="unity-fullscreen-button"></div>
+      <div id="unity-build-title">Isis AI</div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.querySelector("#unity-canvas");
+    const loading = document.querySelector("#unity-loading-msg");
+    const progressText = document.querySelector("#progressText");
+
+    const buildUrl = "Build";
+    const loaderUrl = buildUrl + "/Build.loader.js";  // ensure these match your build output filenames
+    const config = {
+      arguments: [],
+      dataUrl: buildUrl + "/Build.data",
+      frameworkUrl: buildUrl + "/Build.framework.js",
+      codeUrl: buildUrl + "/Build.wasm",
+      workerUrl: buildUrl + "/Build.worker.js",
+
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "5d AI",
+      productName: "Isis AI",
+      productVersion: "0.1",
+      showBanner: function unityShowBanner(msg, type) {
+        const warningBanner = document.querySelector("#unity-warning");
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+        }
+        const div = document.createElement('div');
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type === 'error') div.style = 'background: red; padding: 10px;';
+        else {
+          if (type === 'warning') div.style = 'background: yellow; padding: 10px;';
+          setTimeout(function () { warningBanner.removeChild(div); updateBannerVisibility(); }, 5000);
+        }
+        updateBannerVisibility();
+      }
+    };
+
+    // Mobile viewport setup
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      const meta = document.createElement('meta');
+      meta.name = 'viewport';
+      meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+      document.head.appendChild(meta);
+      document.querySelector("#unity-container").className = "unity-mobile";
+      canvas.className = "unity-mobile";
+    } else {
+      canvas.style.width = "960px";
+      canvas.style.height = "600px";
+    }
+
+    // Load Unity loader first, then create the instance
+    const loaderScript = document.createElement("script");
+    loaderScript.src = loaderUrl;
+    loaderScript.onload = () => {
+      createUnityInstance(canvas, config, (progress) => {
+        progressText.textContent = "Loading " + Math.round(progress * 100) + "%";
+      }).then((unityInstance) => {
+        window.unityInstance = unityInstance;
+        loading.style.display = "none";
+
+        //document.getElementById("volume-bar").style.display = "flex";
+
+        // Allow JS to override Unity GameObject name if needed
+        window.__registerUnityReceiver = function (goName) { window.__unityReceiver = goName; };
+
+        const fsBtn = document.querySelector("#unity-fullscreen-button");
+        if (fsBtn) fsBtn.onclick = () => unityInstance.SetFullscreen(1);
+      }).catch((message) => {
+        loading.style.display = "none";
+        alert(message);
+      });
+    };
+    loaderScript.onerror = () => {
+      loading.style.display = "none";
+      alert("Failed to load Unity loader: " + loaderUrl);
+    };
+    document.body.appendChild(loaderScript);
+
+    // Page-wide AudioContext unlock + volume
+    let pageAudioContext, pageGainNode;
+    function initAudioContext() {
+      if (!pageAudioContext || pageAudioContext.state === "closed") {
+        pageAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+        pageGainNode = pageAudioContext.createGain();
+        pageGainNode.gain.value = 1.0;
+        pageGainNode.connect(pageAudioContext.destination);
+      }
+      if (pageAudioContext.state === 'suspended') pageAudioContext.resume();
+    }
+    window.addEventListener("touchstart", initAudioContext, { once: true });
+    window.addEventListener("click", initAudioContext, { once: true });
+    function setVolume(value) { if (pageGainNode) pageGainNode.gain.value = parseFloat(value); }
+    window.setVolume = setVolume;
+  </script>
+
+  <!-- Output volume UI (We Keep it for Testing) -->
+  <div id="volume-bar" style="display:none">
+    <span>Output volume</span>
+    <input id="volume-slider" type="range" min="0" max="1" step="0.01" value="1" oninput="setVolume(this.value)">
+  </div>
+
+  <!-- Gemini Live WebGL bridge -->
+  <script type="module" src="webgl-live.js"></script>
+</body>
+
+</html>
