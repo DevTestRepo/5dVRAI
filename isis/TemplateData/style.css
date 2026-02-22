@@ -1,7 +1,7 @@
 body {
     padding: 0;
     margin: 0;
-    background-color: #1e5f62;
+    background-color: #000000;
     width: 960px;
     height: 600px;
 }
@@ -9,7 +9,7 @@ body {
 #unity-container {
     position: absolute;
     color: #ffffff;
-    background-color: #1e5f62;
+    background-color: #000000;
     width: 960px;
     height: 600px;
 }
@@ -18,7 +18,7 @@ body {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    background-color: #1e5f62;
+    background-color: #000000;
     width: 960px;
     height: 600px;
 }
@@ -28,7 +28,7 @@ body {
     width: 100%;
     height: 100%;
     color: #ffffff;
-    background-color: #1e5f62;
+    background-color: #000000;
 }
 
 #unity-canvas {
