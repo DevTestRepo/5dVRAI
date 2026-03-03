@@ -676,7 +676,7 @@ window.GL_Setup = function (systemInstruction, voice) {
     p.style.display = qs.get("dev") === "1" ? "block" : p.style.display;
     if (typeof systemInstruction === "string") { const sys = $("#sys"); if (sys) sys.value = systemInstruction; }
     if (typeof voice === "string") { const v = $("#voice"); if (v) v.value = voice; }
-    console.log(systemInstruction,voice);
+    console.log("from JS",systemInstruction,voice);
 
 };
 window.GL_ShowDev = function (show) { const p = ensureDevPanel(); p.style.display = show ? "block" : "none"; };
