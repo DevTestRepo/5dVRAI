@@ -1,0 +1,21 @@
+{
+    "version": 3,
+    "baseUrl": "https://www.5d-ai-hub.com",
+    "projectId": "PsykBot@Khora_2e051",
+    "authMode": "BuildCredential",
+    "buildCredential": "7ce95314e31f27eb7147fc33b145b34ba563c928566365d40192f3d7626659c6",
+    "endpoints": {
+        "mintSession": "/api/webgl/mint-session",
+        "project": "/api/webgl/project",
+        "gpt": "/api/gpt-managed",
+        "asr": "/api/transcribe-managed",
+        "tts": "/api/tts-google-managed"
+    },
+    "network": {
+        "requestTimeoutMs": 45000
+    },
+    "debug": {
+        "enableDebugLogs": true,
+        "showOverlayDebugPanel": false
+    }
+}
