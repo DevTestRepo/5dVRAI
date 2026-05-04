@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "975171525533",
+    "project_id": "the-game-4d711",
+    "storage_bucket": "the-game-4d711.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:975171525533:android:7c22b09cb927193a632d74",
+        "android_client_info": {
+          "package_name": "com.logic.thegame"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDx4V0cNOP9kQLD9jViVQ-mWrjtIRBD0QI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
