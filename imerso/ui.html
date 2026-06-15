@@ -1,0 +1,25 @@
+<!-- ui.html -->
+<!-- Language -->
+<div id="langWrap" title="Language">
+  <select id="langSelect" aria-label="Language"></select>
+</div>
+
+<!-- Chat overlay -->
+<div id="chat">
+  <div id="chatHeader">
+    <div class="title">Chat History</div>
+    <div class="spacer"></div>
+    <button id="btnChatCollapse">Hide</button>
+  </div>
+  <div id="chatBody"></div>
+</div>
+
+<button id="chatCollapsedBtn">💬 Chat</button>
+
+<!-- Mic -->
+<div id="micWrap" data-state="idle">
+  <div id="micBtn" title="Press & hold to talk" aria-label="Hold to talk">
+    <img src="icons/mic.svg" alt="" aria-hidden="true" />
+  </div>
+  <div id="micHint">Hold to talk</div>
+</div>
