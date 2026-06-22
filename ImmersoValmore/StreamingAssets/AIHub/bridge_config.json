@@ -1,0 +1,21 @@
+{
+    "version": 3,
+    "baseUrl": "https://www.5d-ai-hub.com",
+    "projectId": "ImmersoEKH@HelmyDev_3bf96",
+    "authMode": "BuildCredential",
+    "buildCredential": "bcc30b64f6866d0357f0f000a71f981ecbf3e2c397d87ce3db973eefbc78b8bf",
+    "endpoints": {
+        "mintSession": "/api/webgl/mint-session",
+        "project": "/api/webgl/project",
+        "gpt": "/api/gpt-managed",
+        "asr": "/api/transcribe-managed",
+        "tts": "/api/tts-google-managed"
+    },
+    "network": {
+        "requestTimeoutMs": 45000
+    },
+    "debug": {
+        "enableDebugLogs": true,
+        "showOverlayDebugPanel": false
+    }
+}
