@@ -640,4 +640,7 @@ body.web-ui-hidden #micWrap {
 
 #unity-status {
   margin-top: 4px;
+}/* Hide HTML language dropdown because Unity buttons will control language */
+#langWrap {
+  display: none !important;
 }

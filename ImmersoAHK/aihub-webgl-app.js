@@ -410,5 +410,27 @@ function linkify(inputText) {
     toggle: toggleWebUI,
     setVisible: setWebUIVisible
   };
+    // ===== Unity can set AI language =====
+  function setLanguageFromUnity(language) {
+    const v = String(language || "").trim();
+    if (!v) return;
+
+    window.AIHubBridge.setPreferredLanguage(v);
+    writeStoredLang(v);
+
+    // Keep hidden dropdown value synced, if option exists
+    try {
+      if (langSelect) {
+        const match = Array.from(langSelect.options)
+          .find(o => o.value.toLowerCase() === v.toLowerCase());
+
+        if (match) langSelect.value = match.value;
+      }
+    } catch { }
+
+    addMsg("system", "Language: " + v);
+  }
+
+  window.AIHubSetLanguageFromUnity = setLanguageFromUnity;
   main();
 })();
