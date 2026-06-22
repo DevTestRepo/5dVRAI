@@ -432,5 +432,63 @@ function linkify(inputText) {
   }
 
   window.AIHubSetLanguageFromUnity = setLanguageFromUnity;
+    // ===== Unity language buttons + AI intro =====
+  function normalizeUnityLanguage(language) {
+    const v = String(language || "").trim().toLowerCase();
+
+    if (v === "german" || v === "de" || v === "de-de") return "German";
+    return "English";
+  }
+
+  function getIntroText(language) {
+    const lang = normalizeUnityLanguage(language);
+
+    if (lang === "German") {
+      return "Willkommen! Ich bin Ihr KI-Avatar-Guide. Ich kann Ihre Fragen beantworten und Sie durch diese Erfahrung führen. Halten Sie die Mikrofontaste gedrückt, stellen Sie Ihre Frage, und lassen Sie sie los, um sie zu senden.";
+    }
+
+    return "Welcome! I’m your AI avatar guide. I can answer your questions and help you explore this experience. Press and hold the microphone button, ask your question, then release to send it.";
+  }
+
+  async function setLanguageAndPlayIntroFromUnity(language) {
+    const lang = normalizeUnityLanguage(language);
+    const introText = getIntroText(lang);
+
+    try {
+      // Set AI language first
+      window.AIHubBridge.setPreferredLanguage(lang);
+      writeStoredLang(lang);
+
+      // Keep dropdown synced even if hidden
+      try {
+        if (langSelect) {
+          const match = Array.from(langSelect.options)
+            .find(o => o.value.toLowerCase() === lang.toLowerCase());
+
+          if (match) langSelect.value = match.value;
+        }
+      } catch { }
+
+      // Show intro in chat as assistant message
+      addMsg("assistant", introText);
+
+      // Stop any current speech
+      try {
+        window.AIHubBridge.stopTts("new-intro");
+      } catch { }
+
+      // Make sure config/project/session are ready
+      await window.AIHubBridge.ensureProject();
+
+      // Speak intro using selected language
+      const audioUrl = await window.AIHubBridge.ttsManaged(introText);
+      await window.AIHubBridge.playAudioUrl(audioUrl);
+
+    } catch (e) {
+      console.warn("Language intro failed:", e);
+    }
+  }
+
+  window.AIHubSetLanguageAndIntroFromUnity = setLanguageAndPlayIntroFromUnity;
   main();
 })();
