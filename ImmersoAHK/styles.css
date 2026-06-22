@@ -603,50 +603,69 @@ body.web-ui-hidden #micWrap {
   display: none !important;
 }
 /* ===== Custom loading logo ===== */
+/* ===== Final loading screen style ===== */
+
+#unity-loading {
+  background: #000000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Logo + bar move together */
 #unity-loading-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 18px !important;
 
-  /* move BOTH logo and loading bar together */
-  transform: translateY(0px);
-
-  gap: 16px;
+  /* move both logo and bar together */
+  transform: translateY(0px) !important;
 }
 
-/* Logo: no separate movement */
+/* Logo */
 #loading-logo {
-  width: min(180px, 38vw);
-  height: auto;
-  object-fit: contain;
+  width: 180px !important;
+  height: auto !important;
+  object-fit: contain !important;
 
-  /* important: remove old logo-only movement */
+  /* do not move logo alone */
   transform: none !important;
-  margin-bottom: 0;
+  margin: 0 !important;
 }
 
-/* Remove text under loading bar */
+/* Hide Loading World text */
 #unity-status {
   display: none !important;
 }
 
-/* Loading bar track */
+/* Loading bar outer shape */
 #unity-progress {
-  width: min(220px, 55vw);
-  height: 14px;
-  background: rgba(255, 255, 255, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.65);
-  border-radius: 999px;
-  overflow: hidden;
+  width: 240px !important;
+  height: 22px !important;
+
+  background: #1f1f1f !important;
+  border: 3px solid #ffffff !important;
+
+  border-radius: 0 !important;
+  overflow: hidden !important;
+  padding: 0 !important;
 }
 
-/* Loading bar fill = white */
+/* Loading bar fill */
 #unity-progress-bar {
-  height: 100%;
+  height: 100% !important;
   width: 0%;
-  background: #ffffff;
-}/* Hide HTML language dropdown because Unity buttons will control language */
+  background: #ffffff !important;
+
+  border-radius: 0 !important;
+}
+#unity-loading {
+  background: #000000 !important;
+}
+
+/* Hide HTML language dropdown because Unity buttons will control language */
 #langWrap {
   display: none !important;
 }
