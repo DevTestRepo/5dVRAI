@@ -609,37 +609,43 @@ body.web-ui-hidden #micWrap {
   align-items: center;
   justify-content: center;
 
-  /* move logo + loading bar down */
+  /* move BOTH logo and loading bar together */
+  transform: translateY(0px);
 
-  gap: 10px;
+  gap: 16px;
 }
 
+/* Logo: no separate movement */
 #loading-logo {
   width: min(180px, 38vw);
   height: auto;
   object-fit: contain;
 
-  /* move only the logo up */
-  transform: translateY(-45px);
-
-  margin-bottom: 16px;
+  /* important: remove old logo-only movement */
+  transform: none !important;
+  margin-bottom: 0;
 }
 
-/* Optional: make the loading bar like your sample image */
-#unity-progress {
-  width: min(180px, 55vw);
-  height: 18px;
-  border-radius: 0;
-  background: #ffffff;
-  border: none;
-}
-
-#unity-progress-bar {
-  background: #2c2c2c;
-}
-
+/* Remove text under loading bar */
 #unity-status {
-  margin-top: 4px;
+  display: none !important;
+}
+
+/* Loading bar track */
+#unity-progress {
+  width: min(220px, 55vw);
+  height: 14px;
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+/* Loading bar fill = white */
+#unity-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: #ffffff;
 }/* Hide HTML language dropdown because Unity buttons will control language */
 #langWrap {
   display: none !important;
