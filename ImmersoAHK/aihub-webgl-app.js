@@ -349,6 +349,8 @@ function linkify(inputText) {
   }
 
   async function main() {
+        document.body.classList.add("web-ui-hidden");
+
     await injectUI();
     bindElements();
 
@@ -393,6 +395,20 @@ function linkify(inputText) {
     // Start Unity
     bootUnity();
   }
+  // ===== Unity can show / hide HTML UI =====
+  function setWebUIVisible(visible) {
+    document.body.classList.toggle("web-ui-hidden", !visible);
+  }
 
+  function toggleWebUI() {
+    document.body.classList.toggle("web-ui-hidden");
+  }
+
+  window.AIHubWebUI = {
+    show: () => setWebUIVisible(true),
+    hide: () => setWebUIVisible(false),
+    toggle: toggleWebUI,
+    setVisible: setWebUIVisible
+  };
   main();
 })();

@@ -595,3 +595,10 @@ canvas#pdf-canvas {
     max-width: none !important; /* Ensure it can grow infinitely */
 }
 /* PDF Overlay Styling End */
+/* Hide AI Hub HTML UI when Unity asks for it */
+body.web-ui-hidden #langWrap,
+body.web-ui-hidden #chat,
+body.web-ui-hidden #chatCollapsedBtn,
+body.web-ui-hidden #micWrap {
+  display: none !important;
+}
