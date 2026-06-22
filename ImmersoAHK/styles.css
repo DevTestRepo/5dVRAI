@@ -610,7 +610,6 @@ body.web-ui-hidden #micWrap {
   justify-content: center;
 
   /* move logo + loading bar down */
-  transform: translateY(45px);
 
   gap: 10px;
 }
@@ -620,7 +619,9 @@ body.web-ui-hidden #micWrap {
   height: auto;
   object-fit: contain;
 
-  /* space between logo and loading bar */
+  /* move only the logo up */
+  transform: translateY(-45px);
+
   margin-bottom: 16px;
 }
 
