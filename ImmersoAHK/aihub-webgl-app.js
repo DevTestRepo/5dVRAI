@@ -355,8 +355,8 @@ function linkify(inputText) {
     bindElements();
 
     // Apply saved chat state after UI exists
-    setChatCollapsed(getChatCollapsed());
-
+// Always start with chat panel hidden
+setChatCollapsed(true);
     btnChatCollapse.onclick = () => setChatCollapsed(true);
     chatCollapsedBtn.onclick = () => setChatCollapsed(false);
 
