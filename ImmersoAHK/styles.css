@@ -663,8 +663,12 @@ body.web-ui-hidden #micWrap {
 }
 #unity-loading {
   background: #000000 !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
-
+#unity-loading[style*="display: none"] {
+  display: none !important;
+}
 /* Hide HTML language dropdown because Unity buttons will control language */
 #langWrap {
   display: none !important;
