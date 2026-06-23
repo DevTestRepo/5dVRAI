@@ -447,7 +447,7 @@ function linkify(inputText) {
       return "Willkommen! Ich bin Ihr KI-Avatar-Guide. Ich kann Ihre Fragen beantworten und Sie durch diese Erfahrung führen. Halten Sie die Mikrofontaste gedrückt, stellen Sie Ihre Frage, und lassen Sie sie los, um sie zu senden.";
     }
 
-    return "Welcome! I’m your AI avatar guide. I can answer your questions and help you explore this experience. Press and hold the microphone button, ask your question, then release to send it.";
+    return "Hey there! I'm Valen, Digital Brand Ambassador for Valmore Holding. Super excited to dive into things with you, so whenever you're ready, just hold down the mic button, shoot over your question, and let go to send it. What are we looking into first?";
   }
 
   async function setLanguageAndPlayIntroFromUnity(language) {
