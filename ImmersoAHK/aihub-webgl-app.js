@@ -440,15 +440,27 @@ setChatCollapsed(true);
     return "English";
   }
 
-  function getIntroText(language) {
-    const lang = normalizeUnityLanguage(language);
+ function getIntroText(language) {
+  const lang = normalizeUnityLanguage(language);
 
-    if (lang === "German") {
-      return "Willkommen! Ich bin Ihr KI-Avatar-Guide. Ich kann Ihre Fragen beantworten und Sie durch diese Erfahrung führen. Halten Sie die Mikrofontaste gedrückt, stellen Sie Ihre Frage, und lassen Sie sie los, um sie zu senden.";
-    }
+  if (lang === "German") {
+    return `Willkommen zur Egypt Meets Bavaria ICT Delegation.
 
-    return "Welcome! I’m your AI avatar guide. I can answer your questions and help you explore this experience. Press and hold the microphone button, ask your question, then release to send it.";
+Als Vertreterin des Freistaats Bayern in Ägypten freue ich mich, Sie durch die teilnehmenden Unternehmen zu begleiten und Ihnen dabei zu helfen, neue Möglichkeiten für Zusammenarbeit, Innovation und Partnerschaften zu entdecken.
+
+Sie können mich zu jedem Unternehmen, jeder Technologie, Dienstleistung oder Fachkompetenz befragen. Gerne unterstütze ich Sie dabei, die für Ihre Interessen relevantesten Informationen zu finden.
+
+Wie kann ich Ihnen heute helfen?`;
   }
+
+  return `Welcome to the Egypt Meets Bavaria ICT Delegation.
+
+As the Representative of the Free State of Bavaria for Egypt, I am here to guide you through the participating companies and help you discover opportunities for collaboration and innovation.
+
+Feel free to ask me about any company, technology, service, or area of expertise, and I will be happy to assist you.
+
+How may I help you today?`;
+}
 
   async function setLanguageAndPlayIntroFromUnity(language) {
     const lang = normalizeUnityLanguage(language);
