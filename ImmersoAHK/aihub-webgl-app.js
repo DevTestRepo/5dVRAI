@@ -440,26 +440,56 @@ setChatCollapsed(true);
     return "English";
   }
 
- function getIntroText(language) {
+ function getRandomItem(items) {
+  return items[Math.floor(Math.random() * items.length)];
+}
+
+function getIntroText(language) {
   const lang = normalizeUnityLanguage(language);
 
+  const englishIntros = [
+    `Hi I'm Alex, the Bavarian Representative for Egypt, I am here to help you connect with participating companies and explore collaborations. Feel free to ask about any technology, service, or area of expertise.
+
+How can I help you today?`,
+
+    `Welcome to the Egypt Meets Bavaria ICT Delegation!
+
+I’m Alex, the Bavarian Representative for Egypt, and I’m here to help you find the right partners for innovation and growth. Let me know if you are looking for a specific company, technology, or service.
+
+What can I help you find today?`,
+
+    `Hi, I'm Alex.
+Welcome to the Egypt Meets Bavaria ICT Delegation.
+
+As the Representative of the Free State of Bavaria for Egypt, I’m here to guide you to the right partners and technologies. Ask me about any company or service to get started!
+
+How can I assist you?`
+  ];
+
+  const germanIntros = [
+    `Hallo, ich bin Alex, die bayerische Repräsentantin* für Ägypten. Ich bin hier, um Ihnen dabei zu helfen, Kontakte zu den teilnehmenden Unternehmen zu knüpfen und Kooperationsmöglichkeiten zu prüfen. Fragen Sie mich gerne nach bestimmten Technologien, Dienstleistungen oder Fachbereichen.
+
+Wie kann ich Ihnen heute helfen?`,
+
+    `Willkommen bei der ICT-Delegation „Egypt Meets Bavaria“!
+
+Ich bin Alex, die bayerische Repräsentantin* für Ägypten, und ich bin hier, um Sie bei der Suche nach den richtigen Partnern für Innovation und Wachstum zu unterstützen. Lassen Sie mich wissen, wenn Sie nach einem bestimmten Unternehmen, einer Technologie oder einer Dienstleistung suchen.
+
+Was kann ich heute für Sie tun?`,
+
+    `Hallo, ich bin Alex.
+Willkommen bei der ICT-Delegation „Egypt Meets Bavaria“.
+
+Als Repräsentantin* des Freistaates Bayern für Ägypten begleite ich Sie gerne dabei, die passenden Partner und Technologien zu finden. Fragen Sie mich einfach nach einem Unternehmen oder einer Dienstleistung, um zu starten!
+
+Wie kann ich Ihnen behilflich sein?`
+  ];
+
   if (lang === "German") {
-    return `Willkommen zur Egypt Meets Bavaria ICT Delegation.
-
-Als Vertreterin des Freistaats Bayern in Ägypten freue ich mich, Sie durch die teilnehmenden Unternehmen zu begleiten und Ihnen dabei zu helfen, neue Möglichkeiten für Zusammenarbeit, Innovation und Partnerschaften zu entdecken.
-
-Sie können mich zu jedem Unternehmen, jeder Technologie, Dienstleistung oder Fachkompetenz befragen. Gerne unterstütze ich Sie dabei, die für Ihre Interessen relevantesten Informationen zu finden.
-
-Wie kann ich Ihnen heute helfen?`;
+    return getRandomItem(germanIntros);
   }
 
-  return `Welcome to the Egypt Meets Bavaria ICT Delegation.
-
-As the Representative of the Free State of Bavaria for Egypt, I am here to guide you through the participating companies and help you discover opportunities for collaboration and innovation.
-
-Feel free to ask me about any company, technology, service, or area of expertise, and I will be happy to assist you.
-
-How may I help you today?`;
+  return getRandomItem(englishIntros);
 }
 
   async function setLanguageAndPlayIntroFromUnity(language) {
