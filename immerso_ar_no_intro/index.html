@@ -8,15 +8,14 @@
   <title>AHKEvent</title>
 
   <link rel="shortcut icon" href="TemplateData/favicon.ico">
-  <link rel="stylesheet" href="TemplateData/style.css">
-
   <link rel="preload" as="image" href="TemplateData/splash.png" fetchpriority="high">
   <link rel="preload" as="image" href="TemplateData/Logo.png" fetchpriority="high">
   <link rel="preload" as="image" href="TemplateData/back-button.png" fetchpriority="high">
+  <link rel="stylesheet" href="TemplateData/style.css">
 
   <script defer src="TemplateData/webview-back-button.js"></script>
 
-  <!-- MICROPHONE PRO START: keep this only if microphone.js exists beside index.html after build -->
+  <!-- MICROPHONE PRO START -->
   <script src="./microphone.js"></script>
   <!-- MICROPHONE PRO END -->
 </head>
@@ -31,7 +30,7 @@
 
     <div id="unity-loading-bar">
       <div id="unity-loading-content">
-        <div id="unity-logo" aria-label="Logo"></div>
+        <div id="unity-logo" aria-label="5D VR Future Reality logo"></div>
         <div id="unity-progress-bar-empty">
           <div id="unity-progress-bar-full"></div>
         </div>
@@ -39,7 +38,13 @@
       </div>
     </div>
 
-    <div id="unity-warning"></div>
+    <div id="unity-warning"> </div>
+
+    <div id="unity-footer">
+      <div id="unity-webgl-logo"></div>
+      <div id="unity-fullscreen-button"></div>
+      <div id="unity-build-title">AHKEvent</div>
+    </div>
   </div>
 
   <script>
@@ -47,6 +52,7 @@
     const canvas = document.querySelector("#unity-canvas");
     const loadingBar = document.querySelector("#unity-loading-bar");
     const progressBarFull = document.querySelector("#unity-progress-bar-full");
+    const fullscreenButton = document.querySelector("#unity-fullscreen-button");
     const warningBanner = document.querySelector("#unity-warning");
 
     function unityShowBanner(msg, type) {
@@ -56,12 +62,19 @@
 
       const div = document.createElement("div");
       div.innerHTML = msg;
-      div.className = type === "error" ? "unity-banner-error" : "unity-banner-warning";
       warningBanner.appendChild(div);
 
-      if (type !== "error") {
+      if (type === "error") {
+        div.style = "background: red; padding: 10px;";
+      } else {
+        if (type === "warning") {
+          div.style = "background: yellow; padding: 10px;";
+        }
+
         setTimeout(function () {
-          if (warningBanner.contains(div)) warningBanner.removeChild(div);
+          if (warningBanner.contains(div)) {
+            warningBanner.removeChild(div);
+          }
           updateBannerVisibility();
         }, 5000);
       }
@@ -73,6 +86,7 @@
     const loaderUrl = buildUrl + "/Build.loader.js";
 
     const config = {
+      arguments: [],
       dataUrl: buildUrl + "/Build.data",
       frameworkUrl: buildUrl + "/Build.framework.js",
       codeUrl: buildUrl + "/Build.wasm",
@@ -80,21 +94,17 @@
       companyName: "DefaultCompany",
       productName: "AHKEvent",
       productVersion: "0.1.0",
-      showBanner: unityShowBanner,
+      showBanner: unityShowBanner
     };
 
-    function resizeUnityCanvas() {
+    function resizeCanvas() {
       canvas.style.width = "100vw";
       canvas.style.height = "100vh";
-      canvas.width = window.innerWidth * window.devicePixelRatio;
-      canvas.height = window.innerHeight * window.devicePixelRatio;
     }
 
-    window.addEventListener("resize", resizeUnityCanvas);
-    window.addEventListener("orientationchange", function () {
-      setTimeout(resizeUnityCanvas, 300);
-    });
-    resizeUnityCanvas();
+    window.addEventListener("resize", resizeCanvas);
+    window.addEventListener("orientationchange", resizeCanvas);
+    resizeCanvas();
 
     loadingBar.style.display = "flex";
 
@@ -102,7 +112,10 @@
       return new Promise(function (resolve) {
         const img = new Image();
         img.onload = function () { resolve(true); };
-        img.onerror = function () { console.warn("Could not preload image:", src); resolve(false); };
+        img.onerror = function () {
+          console.warn("Could not preload image:", src);
+          resolve(false);
+        };
         img.decoding = "async";
         if ("fetchPriority" in img) img.fetchPriority = "high";
         img.src = src;
@@ -113,7 +126,7 @@
       return new Promise(function (resolve) { setTimeout(resolve, ms); });
     }
 
-    async function startUnity() {
+    async function startUnityAfterLoadingImages() {
       await Promise.race([
         Promise.all([
           preloadImage("TemplateData/splash.png"),
@@ -137,6 +150,12 @@
           }
 
           loadingBar.style.display = "none";
+
+          if (fullscreenButton) {
+            fullscreenButton.onclick = function () {
+              window.vuplex.SetFullscreen(1)/*https://support.vuplex.com/articles/webgl-fullscreen*/;
+            };
+          }
         }).catch(function (message) {
           alert(message);
         });
@@ -145,7 +164,7 @@
       document.body.appendChild(script);
     }
 
-    startUnity();
+    startUnityAfterLoadingImages();
   </script>
 </body>
 </html>
