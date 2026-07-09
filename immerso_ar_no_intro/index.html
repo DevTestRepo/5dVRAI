@@ -7,15 +7,49 @@
     <meta name="viewport"
           content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+        }
 
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="preload" as="image" href="TemplateData/splash.png" fetchpriority="high">
-    <link rel="preload" as="image" href="TemplateData/Logo.png" fetchpriority="high">
-    <link rel="stylesheet" href="TemplateData/style.css">
+        #unity-container {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+        }
 
-    <!-- Optional: keep only if your project has microphone.js beside index.html -->
-    <script src="./microphone.js"></script>
+        #unity-canvas {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+            background: #000;
+        }
+
+        #unity-loading-bar {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 250px;
+            height: 12px;
+            background: #222;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        #unity-progress-bar-full {
+            width: 0%;
+            height: 100%;
+            background: #ffffff;
+        }
+    </style>
 </head>
 
 <body>
@@ -23,53 +57,14 @@
     <canvas id="unity-canvas" tabindex="-1"></canvas>
 
     <div id="unity-loading-bar">
-        <div id="unity-loading-content">
-            <div id="unity-logo" aria-label="5DVR logo"></div>
-
-            <div id="unity-progress-bar-empty">
-                <div id="unity-progress-bar-full"></div>
-            </div>
-
-            <div id="unity-loading-text">Loading...</div>
-        </div>
+        <div id="unity-progress-bar-full"></div>
     </div>
-
-    <div id="unity-warning"></div>
 </div>
 
 <script>
-    const container = document.querySelector("#unity-container");
     const canvas = document.querySelector("#unity-canvas");
     const loadingBar = document.querySelector("#unity-loading-bar");
     const progressBarFull = document.querySelector("#unity-progress-bar-full");
-    const warningBanner = document.querySelector("#unity-warning");
-
-    function unityShowBanner(msg, type) {
-        function updateBannerVisibility() {
-            warningBanner.style.display = warningBanner.children.length ? "block" : "none";
-        }
-
-        const div = document.createElement("div");
-        div.innerHTML = msg;
-        warningBanner.appendChild(div);
-
-        if (type === "error") {
-            div.style = "background: red; padding: 10px;";
-        } else {
-            if (type === "warning") {
-                div.style = "background: yellow; padding: 10px;";
-            }
-
-            setTimeout(function () {
-                if (warningBanner.contains(div)) {
-                    warningBanner.removeChild(div);
-                }
-                updateBannerVisibility();
-            }, 5000);
-        }
-
-        updateBannerVisibility();
-    }
 
     const buildUrl = "Build";
     const loaderUrl = buildUrl + "/Build.loader.js";
@@ -81,69 +76,32 @@
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
         productName: "AHKEvent",
-        productVersion: "0.1.0",
-        showBanner: unityShowBanner
+        productVersion: "0.1.0"
     };
 
     function resizeCanvas() {
         canvas.style.width = "100vw";
         canvas.style.height = "100vh";
-        container.style.width = "100vw";
-        container.style.height = "100vh";
     }
 
     window.addEventListener("resize", resizeCanvas);
-    window.addEventListener("orientationchange", function () {
-        setTimeout(resizeCanvas, 250);
-    });
+    window.addEventListener("orientationchange", resizeCanvas);
     resizeCanvas();
 
-    loadingBar.style.display = "flex";
+    const script = document.createElement("script");
+    script.src = loaderUrl;
 
-    function preloadImage(src) {
-        return new Promise(function (resolve) {
-            const img = new Image();
-            img.onload = function () { resolve(true); };
-            img.onerror = function () { resolve(false); };
-            img.decoding = "async";
-            if ("fetchPriority" in img) img.fetchPriority = "high";
-            img.src = src;
+    script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+            progressBarFull.style.width = (100 * progress) + "%";
+        }).then((unityInstance) => {
+            loadingBar.style.display = "none";
+        }).catch((message) => {
+            alert(message);
         });
-    }
+    };
 
-    function wait(ms) {
-        return new Promise(function (resolve) {
-            setTimeout(resolve, ms);
-        });
-    }
-
-    async function startUnity() {
-        await Promise.race([
-            Promise.all([
-                preloadImage("TemplateData/splash.png"),
-                preloadImage("TemplateData/Logo.png")
-            ]),
-            wait(2000)
-        ]);
-
-        const script = document.createElement("script");
-        script.src = loaderUrl;
-
-        script.onload = () => {
-            createUnityInstance(canvas, config, (progress) => {
-                progressBarFull.style.width = (100 * progress) + "%";
-            }).then((unityInstance) => {
-                window.unityInstance = unityInstance;
-                loadingBar.style.display = "none";
-            }).catch((message) => {
-                alert(message);
-            });
-        };
-
-        document.body.appendChild(script);
-    }
-
-    startUnity();
+    document.body.appendChild(script);
 </script>
 </body>
 </html>
