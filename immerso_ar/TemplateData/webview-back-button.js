@@ -2,20 +2,46 @@
   "use strict";
 
   var unityInstance = null;
+  var isNavigatingBack = false;
+  var inputBlockTimeout = null;
 
   var settings = {
     unityGameObjectName: "Manager",
     unityMethodName: "GoToGameplaySceneFromHtml",
-    buttonId: "webview-back-button"
+    buttonId: "webview-back-button",
+    inputBlockDurationMs: 900
   };
 
   function getButton() {
     return document.getElementById(settings.buttonId);
   }
 
+  function getUnityCanvas() {
+    return document.getElementById("unity-canvas");
+  }
+
   function setUnityInstance(instance) {
     unityInstance = instance;
     window.unityInstance = instance;
+  }
+
+  function blockUnityCanvasInput(durationMs) {
+    var canvas = getUnityCanvas();
+
+    if (!canvas) {
+      return;
+    }
+
+    canvas.style.pointerEvents = "none";
+
+    if (inputBlockTimeout) {
+      clearTimeout(inputBlockTimeout);
+    }
+
+    inputBlockTimeout = setTimeout(function () {
+      canvas.style.pointerEvents = "";
+      inputBlockTimeout = null;
+    }, durationMs);
   }
 
   function showWebViewBackButton() {
@@ -26,8 +52,11 @@
       return;
     }
 
+    isNavigatingBack = false;
+
     button.style.display = "block";
     button.style.pointerEvents = "auto";
+    button.style.opacity = "1";
   }
 
   function hideWebViewBackButton() {
@@ -39,6 +68,9 @@
 
     button.style.display = "none";
     button.style.pointerEvents = "none";
+    button.style.opacity = "1";
+
+    isNavigatingBack = false;
   }
 
   function sendBackMessageToUnity() {
@@ -60,9 +92,48 @@
     );
   }
 
-  function goToGameplaySceneFromHtml() {
-    hideWebViewBackButton();
+  function stopEvent(event) {
+    if (!event) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (event.stopImmediatePropagation) {
+      event.stopImmediatePropagation();
+    }
+  }
+
+  function goToGameplaySceneFromHtml(event) {
+    stopEvent(event);
+
+    if (isNavigatingBack) {
+      return false;
+    }
+
+    isNavigatingBack = true;
+
+    var button = getButton();
+
+    if (button) {
+      button.style.opacity = "0.65";
+      button.style.pointerEvents = "auto";
+    }
+
+    // Important:
+    // This prevents the same mobile tap from reaching the Unity gameplay UI.
+    blockUnityCanvasInput(settings.inputBlockDurationMs);
+
     sendBackMessageToUnity();
+
+    // Do not hide instantly.
+    // Keeping it alive for a short moment prevents tap-through.
+    setTimeout(function () {
+      hideWebViewBackButton();
+    }, settings.inputBlockDurationMs);
+
+    return false;
   }
 
   function setUnityTarget(gameObjectName, methodName) {
@@ -83,12 +154,22 @@
       return;
     }
 
-    button.addEventListener("pointerup", function (event) {
-      event.preventDefault();
-      event.stopPropagation();
+    button.addEventListener("pointerdown", goToGameplaySceneFromHtml, true);
 
-      goToGameplaySceneFromHtml();
-    });
+    button.addEventListener("click", function (event) {
+      stopEvent(event);
+      return false;
+    }, true);
+
+    button.addEventListener("touchstart", function (event) {
+      stopEvent(event);
+      return false;
+    }, { capture: true, passive: false });
+
+    button.addEventListener("touchend", function (event) {
+      stopEvent(event);
+      return false;
+    }, { capture: true, passive: false });
 
     hideWebViewBackButton();
   }
