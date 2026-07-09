@@ -1,0 +1,142 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#unity-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000 url("splash.png") center center / cover no-repeat;
+}
+
+#unity-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  background: transparent;
+}
+
+#unity-loading-bar {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1000;
+}
+
+#unity-loading-content {
+  width: min(75vw, 360px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+#unity-logo {
+  width: 180px;
+  height: 100px;
+  background: url("Logo.png") center center / contain no-repeat;
+}
+
+#unity-progress-bar-empty {
+  width: 100%;
+  height: 12px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+#unity-progress-bar-full {
+  width: 0%;
+  height: 100%;
+  border-radius: 999px;
+  background: #fff;
+}
+
+#unity-loading-text {
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+}
+
+#unity-warning {
+  position: fixed;
+  left: 50%;
+  top: env(safe-area-inset-top, 0px);
+  transform: translateX(-50%);
+  width: min(90vw, 720px);
+  z-index: 2147483646;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+}
+
+.unity-banner-error,
+.unity-banner-warning {
+  margin-top: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+
+.unity-banner-error {
+  background: #ff3333;
+  color: #fff;
+}
+
+.unity-banner-warning {
+  background: #ffdd33;
+  color: #000;
+}
+
+#webview-back-button {
+  position: fixed;
+  left: calc(env(safe-area-inset-left, 0px) + 18px);
+  top: calc(env(safe-area-inset-top, 0px) + 18px);
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  cursor: pointer;
+  z-index: 2147483647;
+  display: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+#webview-back-button img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+#webview-back-button:active {
+  transform: scale(0.94);
+}
+
+@media (max-width: 480px) {
+  #webview-back-button {
+    width: 58px;
+    height: 58px;
+    left: calc(env(safe-area-inset-left, 0px) + 14px);
+    top: calc(env(safe-area-inset-top, 0px) + 14px);
+  }
+}
