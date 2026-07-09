@@ -3,240 +3,109 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-
-    <title>Unity WebGL Player | 5DVRPackage</title>
-
+    <title>Unity Web Player | AHKEvent</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
-
-    <!-- Loading screen images -->
-    <link rel="preload" as="image" href="TemplateData/splash.png" fetchpriority="high">
-    <link rel="preload" as="image" href="TemplateData/Logo.png" fetchpriority="high">
-
-    <!-- Back button image -->
-    <link rel="preload" as="image" href="TemplateData/back-button.png" fetchpriority="high">
-
     <link rel="stylesheet" href="TemplateData/style.css">
-
-    <!-- Back button overlay JS -->
-    <script defer src="TemplateData/webview-back-button.js"></script>
-
-    <!-- MICROPHONE PRO START -->
-    <script src="./microphone.js"></script>
-    <!-- MICROPHONE PRO END -->
-
-    <style>
-      #webview-back-button {
-        position: fixed;
-
-        left: calc(env(safe-area-inset-left, 0px) + 18px);
-        top: calc(env(safe-area-inset-top, 0px) + 18px);
-
-        width: 64px;
-        height: 64px;
-
-        padding: 0;
-        margin: 0;
-        border: none;
-        outline: none;
-
-        background: transparent;
-        cursor: pointer;
-
-        z-index: 2147483647;
-
-        display: none;
-
-        -webkit-tap-highlight-color: transparent;
-        touch-action: manipulation;
-      }
-
-      #webview-back-button img {
-        width: 100%;
-        height: 100%;
-        display: block;
-        pointer-events: none;
-        user-select: none;
-        -webkit-user-drag: none;
-      }
-
-      #webview-back-button:active {
-        transform: scale(0.94);
-      }
-
-      @media (max-width: 480px) {
-        #webview-back-button {
-          width: 58px;
-          height: 58px;
-          left: calc(env(safe-area-inset-left, 0px) + 14px);
-          top: calc(env(safe-area-inset-top, 0px) + 14px);
-        }
-      }
-    </style>
+    <link rel="manifest" href="manifest.webmanifest">
   </head>
-
   <body>
-    <!-- HTML overlay button above Vuplex WebGL 2D WebView -->
-    <button id="webview-back-button" type="button" aria-label="Back to Gameplay">
-      <img src="TemplateData/back-button.png" alt="Back">
-    </button>
-
-    <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width="960" height="600"></canvas>
-
+    <div id="unity-container">
+      <canvas id="unity-canvas" width=1920 height=1080 tabindex="-1"></canvas>
       <div id="unity-loading-bar">
-        <div id="unity-loading-content">
-          <div id="unity-logo" aria-label="5D VR Future Reality logo"></div>
-
-          <div id="unity-progress-bar-empty">
-            <div id="unity-progress-bar-full"></div>
-          </div>
-
-          <div id="unity-loading-text">Loading...</div>
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
         </div>
       </div>
-
       <div id="unity-warning"> </div>
-
-      <div id="unity-footer">
-        <div id="unity-webgl-logo"></div>
-        <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">5DVRPackage</div>
-      </div>
     </div>
-
     <script>
+      window.addEventListener("load", function () {
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.register("ServiceWorker.js");
+        }
+      });
+
       var container = document.querySelector("#unity-container");
       var canvas = document.querySelector("#unity-canvas");
       var loadingBar = document.querySelector("#unity-loading-bar");
       var progressBarFull = document.querySelector("#unity-progress-bar-full");
-      var fullscreenButton = document.querySelector("#unity-fullscreen-button");
       var warningBanner = document.querySelector("#unity-warning");
 
+      // Shows a temporary message banner/ribbon for a few seconds, or
+      // a permanent error message on top of the canvas if type=='error'.
+      // If type=='warning', a yellow highlight color is used.
+      // Modify or remove this function to customize the visually presented
+      // way that non-critical warnings and error messages are presented to the
+      // user.
       function unityShowBanner(msg, type) {
         function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? "block" : "none";
+          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
         }
-
-        var div = document.createElement("div");
+        var div = document.createElement('div');
         div.innerHTML = msg;
         warningBanner.appendChild(div);
-
-        if (type == "error") {
-          div.style = "background: red; padding: 10px;";
-        } else {
-          if (type == "warning") {
-            div.style = "background: yellow; padding: 10px;";
-          }
-
-          setTimeout(function () {
-            if (warningBanner.contains(div)) {
-              warningBanner.removeChild(div);
-            }
-
+        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        else {
+          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+          setTimeout(function() {
+            warningBanner.removeChild(div);
             updateBannerVisibility();
           }, 5000);
         }
-
         updateBannerVisibility();
       }
 
       var buildUrl = "Build";
       var loaderUrl = buildUrl + "/Build.loader.js";
-
       var config = {
+        arguments: [],
         dataUrl: buildUrl + "/Build.data",
         frameworkUrl: buildUrl + "/Build.framework.js",
         codeUrl: buildUrl + "/Build.wasm",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
-        productName: "5DVRPackage",
-        productVersion: "0.1",
+        productName: "AHKEvent",
+        productVersion: "0.1.0",
         showBanner: unityShowBanner,
+        // errorHandler: function(err, url, line) {
+        //    alert("error " + err + " occurred at line " + line);
+        //    // Return 'true' if you handled this error and don't want Unity
+        //    // to process it further, 'false' otherwise.
+        //    return true;
+        // },
       };
 
+      // By default Unity keeps WebGL canvas render target size matched with
+      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
+      // Set this to false if you want to decouple this synchronization from
+      // happening inside the engine, and you would instead like to size up
+      // the canvas DOM size and WebGL render target sizes yourself.
+      // config.matchWebGLToCanvasSize = false;
+
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        var meta = document.createElement("meta");
-        meta.name = "viewport";
-        meta.content = "width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes";
-        document.getElementsByTagName("head")[0].appendChild(meta);
-
-        container.className = "unity-mobile";
-        canvas.className = "unity-mobile";
-      } else {
-        canvas.style.width = "960px";
-        canvas.style.height = "600px";
+        // Mobile device style: fill the whole browser client area with the game canvas:
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
       }
 
-      loadingBar.style.display = "flex";
 
-      function preloadImage(src) {
-        return new Promise(function (resolve) {
-          var img = new Image();
+      loadingBar.style.display = "block";
 
-          img.onload = function () {
-            resolve(true);
-          };
-
-          img.onerror = function () {
-            console.warn("Could not preload image:", src);
-            resolve(false);
-          };
-
-          img.decoding = "async";
-
-          if ("fetchPriority" in img) {
-            img.fetchPriority = "high";
-          }
-
-          img.src = src;
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+          progressBarFull.style.width = 100 * progress + "%";
+        }).then((unityInstance) => {
+          loadingBar.style.display = "none";
+        }).catch((message) => {
+          alert(message);
         });
-      }
-
-      function wait(ms) {
-        return new Promise(function (resolve) {
-          setTimeout(resolve, ms);
-        });
-      }
-
-      async function startUnityAfterLoadingImages() {
-        await Promise.race([
-          Promise.all([
-            preloadImage("TemplateData/splash.png"),
-            preloadImage("TemplateData/Logo.png"),
-            preloadImage("TemplateData/back-button.png")
-          ]),
-          wait(2000)
-        ]);
-
-        var script = document.createElement("script");
-        script.src = loaderUrl;
-
-        script.onload = function () {
-          createUnityInstance(canvas, config, function (progress) {
-            progressBarFull.style.width = (100 * progress) + "%";
-          }).then(function (unityInstance) {
-            window.unityInstance = unityInstance;
-
-            if (window.WebViewBackButton) {
-              window.WebViewBackButton.setUnityInstance(unityInstance);
-            }
-
-            loadingBar.style.display = "none";
-
-            if (fullscreenButton != null) {
-              fullscreenButton.onclick = function () {
-                unityInstance.SetFullscreen(1);
-              };
-            }
-          }).catch(function (message) {
-            alert(message);
-          });
-        };
-
-        document.body.appendChild(script);
-      }
-
-      startUnityAfterLoadingImages();
+      };
+      document.body.appendChild(script);
     </script>
   </body>
 </html>
