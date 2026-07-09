@@ -7,109 +7,15 @@
     <meta name="viewport"
           content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="preload" as="image" href="TemplateData/splash.png" fetchpriority="high">
     <link rel="preload" as="image" href="TemplateData/Logo.png" fetchpriority="high">
+    <link rel="stylesheet" href="TemplateData/style.css">
 
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: #000;
-        }
-
-        #unity-container {
-            position: fixed;
-            inset: 0;
-            width: 100vw;
-            height: 100vh;
-            background: #000;
-        }
-
-        #unity-canvas {
-            width: 100vw;
-            height: 100vh;
-            display: block;
-            background: #000;
-        }
-
-        #unity-loading-bar {
-            position: fixed;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background:
-                radial-gradient(circle at center 58%, rgba(255, 0, 128, 0.22), rgba(0, 0, 0, 0.15) 34%, rgba(0, 0, 0, 0.68) 74%),
-                url("TemplateData/splash.png") center center / cover no-repeat,
-                #000;
-            z-index: 9999;
-        }
-
-        #unity-loading-content {
-            width: min(76vw, 330px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transform: translateY(-1.8vh);
-        }
-
-        #unity-logo {
-            width: min(72vw, 305px);
-            aspect-ratio: 746 / 839;
-            background: url("TemplateData/Logo.png") center center / contain no-repeat;
-            filter:
-                drop-shadow(0 0 10px rgba(255, 255, 255, 0.50))
-                drop-shadow(0 0 28px rgba(255, 0, 145, 0.95));
-        }
-
-        #unity-progress-bar-empty {
-            width: min(70vw, 276px);
-            height: 10px;
-            margin-top: 16px;
-            border-radius: 999px;
-            overflow: hidden;
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow:
-                0 0 8px rgba(255, 255, 255, 0.76),
-                0 0 22px rgba(255, 0, 145, 0.72);
-        }
-
-        #unity-progress-bar-full {
-            width: 0%;
-            height: 100%;
-            border-radius: 999px;
-            background: linear-gradient(90deg, #ff1a9b 0%, #ff4eb6 55%, #ffffff 100%);
-            box-shadow: 0 0 16px rgba(255, 0, 145, 0.95);
-            transition: width 0.18s ease-out;
-        }
-
-        #unity-loading-text {
-            margin-top: 13px;
-            color: #fff;
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 17px;
-            font-weight: 800;
-            text-shadow:
-                0 0 8px rgba(255, 255, 255, 0.58),
-                0 0 16px rgba(255, 0, 145, 0.72);
-        }
-
-        #unity-warning {
-            position: fixed;
-            left: 50%;
-            top: 5%;
-            transform: translateX(-50%);
-            z-index: 10000;
-            background: white;
-            padding: 10px;
-            display: none;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-    </style>
+    <!-- Optional: keep only if your project has microphone.js beside index.html -->
+    <script src="./microphone.js"></script>
 </head>
 
 <body>
@@ -118,10 +24,12 @@
 
     <div id="unity-loading-bar">
         <div id="unity-loading-content">
-            <div id="unity-logo"></div>
+            <div id="unity-logo" aria-label="5DVR logo"></div>
+
             <div id="unity-progress-bar-empty">
                 <div id="unity-progress-bar-full"></div>
             </div>
+
             <div id="unity-loading-text">Loading...</div>
         </div>
     </div>
@@ -130,6 +38,7 @@
 </div>
 
 <script>
+    const container = document.querySelector("#unity-container");
     const canvas = document.querySelector("#unity-canvas");
     const loadingBar = document.querySelector("#unity-loading-bar");
     const progressBarFull = document.querySelector("#unity-progress-bar-full");
@@ -150,6 +59,7 @@
             if (type === "warning") {
                 div.style = "background: yellow; padding: 10px;";
             }
+
             setTimeout(function () {
                 if (warningBanner.contains(div)) {
                     warningBanner.removeChild(div);
@@ -178,27 +88,62 @@
     function resizeCanvas() {
         canvas.style.width = "100vw";
         canvas.style.height = "100vh";
+        container.style.width = "100vw";
+        container.style.height = "100vh";
     }
 
     window.addEventListener("resize", resizeCanvas);
-    window.addEventListener("orientationchange", resizeCanvas);
+    window.addEventListener("orientationchange", function () {
+        setTimeout(resizeCanvas, 250);
+    });
     resizeCanvas();
 
-    const script = document.createElement("script");
-    script.src = loaderUrl;
+    loadingBar.style.display = "flex";
 
-    script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-            progressBarFull.style.width = (100 * progress) + "%";
-        }).then((unityInstance) => {
-            window.unityInstance = unityInstance;
-            loadingBar.style.display = "none";
-        }).catch((message) => {
-            alert(message);
+    function preloadImage(src) {
+        return new Promise(function (resolve) {
+            const img = new Image();
+            img.onload = function () { resolve(true); };
+            img.onerror = function () { resolve(false); };
+            img.decoding = "async";
+            if ("fetchPriority" in img) img.fetchPriority = "high";
+            img.src = src;
         });
-    };
+    }
 
-    document.body.appendChild(script);
+    function wait(ms) {
+        return new Promise(function (resolve) {
+            setTimeout(resolve, ms);
+        });
+    }
+
+    async function startUnity() {
+        await Promise.race([
+            Promise.all([
+                preloadImage("TemplateData/splash.png"),
+                preloadImage("TemplateData/Logo.png")
+            ]),
+            wait(2000)
+        ]);
+
+        const script = document.createElement("script");
+        script.src = loaderUrl;
+
+        script.onload = () => {
+            createUnityInstance(canvas, config, (progress) => {
+                progressBarFull.style.width = (100 * progress) + "%";
+            }).then((unityInstance) => {
+                window.unityInstance = unityInstance;
+                loadingBar.style.display = "none";
+            }).catch((message) => {
+                alert(message);
+            });
+        };
+
+        document.body.appendChild(script);
+    }
+
+    startUnity();
 </script>
 </body>
 </html>
