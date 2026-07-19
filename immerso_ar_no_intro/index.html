@@ -1,226 +1,418 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity Web Player | CosmicWaters</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-    <style>
-      /* HTML back button stays above the Vuplex WebGL iframe. */
-      #webview-back-button {
-        position: fixed;
-        top: max(16px, env(safe-area-inset-top));
-        left: max(16px, env(safe-area-inset-left));
-        width: 56px;
-        height: 56px;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-        margin: 0;
-        border: 2px solid rgba(255, 255, 255, 0.9);
-        border-radius: 50%;
-        background: rgba(0, 0, 0, 0.65);
-        color: #ffffff;
-        cursor: pointer;
-        z-index: 2147483647;
-        pointer-events: auto;
-        touch-action: manipulation;
-        user-select: none;
-        -webkit-user-select: none;
-        -webkit-tap-highlight-color: transparent;
-        box-sizing: border-box;
-      }
+  <title>Unity Web Player | CosmicWaters</title>
 
-      #webview-back-button svg {
-        width: 28px;
-        height: 28px;
-        pointer-events: none;
-      }
+  <link rel="shortcut icon" href="TemplateData/favicon.ico">
+  <link rel="stylesheet" href="TemplateData/style.css">
 
-      #webview-back-button:active {
-        transform: scale(0.92);
-      }
+  <!-- MICROPHONE PRO START -->
+  <script src="./microphone.js"></script>
+  <!-- MICROPHONE PRO END -->
 
-      #webview-back-button:focus-visible {
-        outline: 3px solid #ffffff;
-        outline-offset: 3px;
-      }
-    </style>
-  
-    <!-- MICROPHONE PRO START -->
-    <script src='./microphone.js'></script>
-    <!-- MICROPHONE PRO END -->
+  <style>
+    /*
+     * HTML back button.
+     * It starts hidden and is displayed only when Unity calls ShowBackButton().
+     */
+    #webview-back-button {
+      position: fixed;
+
+      top: max(20px, env(safe-area-inset-top));
+      left: max(20px, env(safe-area-inset-left));
+
+      width: 60px;
+      height: 60px;
+
+      display: none;
+      align-items: center;
+      justify-content: center;
+
+      padding: 0;
+      margin: 0;
+
+      border: none;
+      border-radius: 50%;
+
+      background: rgba(0, 0, 0, 0.65);
+
+      cursor: pointer;
+
+      /*
+       * Keep the HTML button above the Vuplex iframe.
+       */
+      z-index: 2147483647;
+
+      pointer-events: auto;
+      touch-action: manipulation;
+
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+
+      box-sizing: border-box;
+    }
+
+    #webview-back-button img {
+      width: 32px;
+      height: 32px;
+
+      display: block;
+
+      object-fit: contain;
+
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #webview-back-button:active {
+      transform: scale(0.9);
+    }
+
+    #webview-back-button:focus-visible {
+      outline: 3px solid white;
+      outline-offset: 3px;
+    }
+  </style>
 </head>
-  <body>
-    <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
 
-      <!-- HTML button is required because the Vuplex iframe renders above Unity UI. -->
-      <button id="webview-back-button" type="button" aria-label="Back">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M15.5 4.5L8 12l7.5 7.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
-        </svg>
-      </button>
-      <div id="unity-loading-bar">
-        <div id="unity-logo"></div>
-        <div id="unity-progress-bar-empty">
-          <div id="unity-progress-bar-full"></div>
-        </div>
-      </div>
-      <div id="unity-warning"> </div>
-      <div id="unity-footer">
-        <div id="unity-logo-title-footer"></div>
-        <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">CosmicWaters</div>
+<body>
+
+  <div id="unity-container" class="unity-desktop">
+
+    <canvas
+      id="unity-canvas"
+      width="960"
+      height="600"
+      tabindex="-1">
+    </canvas>
+
+    <!--
+      HTML button displayed above the Vuplex WebView.
+      The icon is loaded from TemplateData/back-arrow.png.
+    -->
+    <button
+      id="webview-back-button"
+      type="button"
+      aria-label="Back"
+    >
+      <img
+        src="TemplateData/back-arrow.png"
+        alt=""
+        draggable="false"
+      >
+    </button>
+
+    <div id="unity-loading-bar">
+      <div id="unity-logo"></div>
+
+      <div id="unity-progress-bar-empty">
+        <div id="unity-progress-bar-full"></div>
       </div>
     </div>
-    <script>
-      var canvas = document.querySelector("#unity-canvas");
 
-      // Vuplex HTML back-button bridge.
-      // Unity receiver GameObject: WebViewBackButtonBridge
-      // Unity receiver method: OnHtmlBackButtonClicked
-      var webViewBackButtonLocked = false;
+    <div id="unity-warning"></div>
 
-      window.setWebViewBackButtonVisible = function(visible) {
-        var backButton = document.querySelector("#webview-back-button");
-        if (!backButton) return;
-        backButton.style.display = visible ? "flex" : "none";
-      };
+    <div id="unity-footer">
+      <div id="unity-logo-title-footer"></div>
+      <div id="unity-fullscreen-button"></div>
+      <div id="unity-build-title">CosmicWaters</div>
+    </div>
 
-      function sendWebViewBackButtonEventToUnity(event) {
-        event.preventDefault();
-        event.stopPropagation();
+  </div>
 
-        // Prevent an accidental double tap from invoking the UnityEvent twice.
-        if (webViewBackButtonLocked) return;
-        webViewBackButtonLocked = true;
-        setTimeout(function() {
-          webViewBackButtonLocked = false;
-        }, 500);
+  <script>
+    var canvas = document.querySelector("#unity-canvas");
 
-        if (window.unityInstance && typeof window.unityInstance.SendMessage === "function") {
-          window.unityInstance.SendMessage(
-            "WebViewBackButtonBridge",
-            "OnHtmlBackButtonClicked"
-          );
-        } else {
-          console.warn("Unity is not ready. The back-button event was not sent.");
-        }
+    /*
+     * Global Unity instance.
+     * This is required so the HTML button can call Unity SendMessage().
+     */
+    window.unityInstance = null;
+
+    /*
+     * Unity GameObject and public method that receive the HTML back-button click.
+     *
+     * The Unity GameObject must be named exactly:
+     * WebViewBackButtonBridge
+     */
+    const backButtonUnityGameObject = "WebViewBackButtonBridge";
+    const backButtonUnityMethod = "OnHtmlBackButtonClicked";
+
+    /*
+     * Prevent accidental double clicks on mobile devices.
+     */
+    let backButtonClickLocked = false;
+
+    /*
+     * Shows or hides the HTML back button.
+     * This function is called by the WebGL .jslib plugin.
+     */
+    window.setWebViewBackButtonVisible = function (visible) {
+      const backButton = document.getElementById(
+        "webview-back-button"
+      );
+
+      if (!backButton) {
+        console.warn(
+          "The webview back button could not be found."
+        );
+
+        return;
       }
 
-      var webViewBackButton = document.querySelector("#webview-back-button");
-      if (webViewBackButton) {
-        webViewBackButton.addEventListener("click", sendWebViewBackButtonEventToUnity, false);
-      }
-
-      // Shows a temporary message banner/ribbon for a few seconds, or
-      // a permanent error message on top of the canvas if type=='error'.
-      // If type=='warning', a yellow highlight color is used.
-      // Modify or remove this function to customize the visually presented
-      // way that non-critical warnings and error messages are presented to the
-      // user.
-      function unityShowBanner(msg, type) {
-        var warningBanner = document.querySelector("#unity-warning");
-        function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
-        }
-        var div = document.createElement('div');
-        div.innerHTML = msg;
-        warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
-        else {
-          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function() {
-            warningBanner.removeChild(div);
-            updateBannerVisibility();
-          }, 5000);
-        }
-        updateBannerVisibility();
-      }
-
-      var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/Build.loader.js";
-      var config = {
-        arguments: [],
-        dataUrl: buildUrl + "/Build.data.unityweb",
-        frameworkUrl: buildUrl + "/Build.framework.js.unityweb",
-        codeUrl: buildUrl + "/Build.wasm.unityweb",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "Cruises",
-        productName: "CosmicWaters",
-        productVersion: "0.1",
-        showBanner: unityShowBanner,
-        // errorHandler: function(err, url, line) {
-        //    alert("error " + err + " occurred at line " + line);
-        //    // Return 'true' if you handled this error and don't want Unity
-        //    // to process it further, 'false' otherwise.
-        //    return true;
-        // },
-      };
-
-      // By default, Unity keeps WebGL canvas render target size matched with
-      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
-      // Set this to false if you want to decouple this synchronization from
-      // happening inside the engine, and you would instead like to size up
-      // the canvas DOM size and WebGL render target sizes yourself.
-      // config.matchWebGLToCanvasSize = false;
-
-      // If you would like all file writes inside Unity Application.persistentDataPath
-      // directory to automatically persist so that the contents are remembered when
-      // the user revisits the site the next time, uncomment the following line:
-      // config.autoSyncPersistentDataPath = true;
-      // This autosyncing is currently not the default behavior to avoid regressing
-      // existing user projects that might rely on the earlier manual
-      // JS_FileSystem_Sync() behavior, but in future Unity version, this will be
-      // expected to change.
-
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
-
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
-        document.querySelector("#unity-container").className = "unity-mobile";
-        canvas.className = "unity-mobile";
-
-        // To lower canvas resolution on mobile devices to gain some
-        // performance, uncomment the following line:
-        // config.devicePixelRatio = 1;
-
-
+      if (visible) {
+        backButton.style.display = "flex";
       } else {
-        // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
-        canvas.style.width = "960px";
-        canvas.style.height = "600px";
+        backButton.style.display = "none";
+      }
+    };
+
+    /*
+     * Called when the user presses the HTML back button.
+     */
+    function handleWebViewBackButtonClick(event) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (backButtonClickLocked) {
+        return;
       }
 
-      document.querySelector("#unity-loading-bar").style.display = "block";
+      backButtonClickLocked = true;
 
-      var script = document.createElement("script");
-      script.src = loaderUrl;
-      script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-          document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
-              }).then((unityInstance) => {
-                window.unityInstance = unityInstance;
-                document.querySelector("#unity-loading-bar").style.display = "none";
-                window.setWebViewBackButtonVisible(true);
-                document.querySelector("#unity-fullscreen-button").onclick = () => {
-                  window.vuplex.SetFullscreen(1)/*https://support.vuplex.com/articles/webgl-fullscreen*/;
-                };
+      /*
+       * Hide the button immediately after it is clicked.
+       */
+      window.setWebViewBackButtonVisible(false);
 
-              }).catch((message) => {
-                alert(message);
-              });
-            };
+      /*
+       * Send the click to Unity.
+       */
+      if (
+        window.unityInstance &&
+        typeof window.unityInstance.SendMessage === "function"
+      ) {
+        window.unityInstance.SendMessage(
+          backButtonUnityGameObject,
+          backButtonUnityMethod
+        );
+      } else {
+        console.warn(
+          "Unity is not ready. The back-button event was not sent."
+        );
+      }
 
-      document.body.appendChild(script);
+      /*
+       * Unlock after a short delay to avoid sensitive mobile double taps.
+       */
+      window.setTimeout(function () {
+        backButtonClickLocked = false;
+      }, 500);
+    }
 
-    </script>
-  </body>
+    /*
+     * Initialize the HTML back button.
+     */
+    function initializeWebViewBackButton() {
+      const backButton = document.getElementById(
+        "webview-back-button"
+      );
+
+      if (!backButton) {
+        console.error(
+          "Failed to initialize the webview back button."
+        );
+
+        return;
+      }
+
+      /*
+       * Always start hidden.
+       */
+      window.setWebViewBackButtonVisible(false);
+
+      backButton.addEventListener(
+        "click",
+        handleWebViewBackButtonClick,
+        false
+      );
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener(
+        "DOMContentLoaded",
+        initializeWebViewBackButton
+      );
+    } else {
+      initializeWebViewBackButton();
+    }
+
+    /*
+     * Shows a temporary warning or error message above the Unity canvas.
+     */
+    function unityShowBanner(msg, type) {
+      var warningBanner = document.querySelector(
+        "#unity-warning"
+      );
+
+      function updateBannerVisibility() {
+        warningBanner.style.display =
+          warningBanner.children.length
+            ? "block"
+            : "none";
+      }
+
+      var div = document.createElement("div");
+
+      div.innerHTML = msg;
+
+      warningBanner.appendChild(div);
+
+      if (type === "error") {
+        div.style = "background: red; padding: 10px;";
+      } else {
+        if (type === "warning") {
+          div.style =
+            "background: yellow; padding: 10px;";
+        }
+
+        setTimeout(function () {
+          warningBanner.removeChild(div);
+          updateBannerVisibility();
+        }, 5000);
+      }
+
+      updateBannerVisibility();
+    }
+
+    /*
+     * Keep your original Unity build configuration.
+     */
+    var buildUrl = "Build";
+    var loaderUrl = buildUrl + "/Build.loader.js";
+
+    var config = {
+      arguments: [],
+
+      dataUrl:
+        buildUrl + "/Build.data.unityweb",
+
+      frameworkUrl:
+        buildUrl + "/Build.framework.js.unityweb",
+
+      codeUrl:
+        buildUrl + "/Build.wasm.unityweb",
+
+      streamingAssetsUrl: "StreamingAssets",
+
+      companyName: "Cruises",
+      productName: "CosmicWaters",
+      productVersion: "0.1",
+
+      showBanner: unityShowBanner
+    };
+
+    /*
+     * Mobile configuration.
+     */
+    if (
+      /iPhone|iPad|iPod|Android/i.test(
+        navigator.userAgent
+      )
+    ) {
+      var meta = document.createElement("meta");
+
+      meta.name = "viewport";
+
+      meta.content =
+        "width=device-width, " +
+        "height=device-height, " +
+        "initial-scale=1.0, " +
+        "user-scalable=no, " +
+        "shrink-to-fit=yes";
+
+      document
+        .getElementsByTagName("head")[0]
+        .appendChild(meta);
+
+      document.querySelector(
+        "#unity-container"
+      ).className = "unity-mobile";
+
+      canvas.className = "unity-mobile";
+
+      /*
+       * Optional mobile performance setting:
+       *
+       * config.devicePixelRatio = 1;
+       */
+    } else {
+      /*
+       * Preserve the original desktop canvas resolution.
+       */
+      canvas.style.width = "960px";
+      canvas.style.height = "600px";
+    }
+
+    document.querySelector(
+      "#unity-loading-bar"
+    ).style.display = "block";
+
+    var script = document.createElement("script");
+
+    script.src = loaderUrl;
+
+    script.onload = function () {
+      createUnityInstance(
+        canvas,
+        config,
+        function (progress) {
+          document.querySelector(
+            "#unity-progress-bar-full"
+          ).style.width =
+            100 * progress + "%";
+        }
+      )
+        .then(function (unityInstance) {
+          /*
+           * Store Unity globally so the HTML button can use SendMessage().
+           */
+          window.unityInstance = unityInstance;
+
+          document.querySelector(
+            "#unity-loading-bar"
+          ).style.display = "none";
+
+          document.querySelector(
+            "#unity-fullscreen-button"
+          ).onclick = function () {
+            /*
+             * Preserve your original Vuplex fullscreen behavior.
+             */
+            if (
+              window.vuplex &&
+              typeof window.vuplex.SetFullscreen === "function"
+            ) {
+              window.vuplex.SetFullscreen(1);
+            } else {
+              console.warn(
+                "Vuplex fullscreen API is not available."
+              );
+            }
+          };
+        })
+        .catch(function (message) {
+          alert(message);
+        });
+    };
+
+    document.body.appendChild(script);
+  </script>
+
+</body>
 </html>
