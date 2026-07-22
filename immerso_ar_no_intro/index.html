@@ -2,12 +2,22 @@
 <html lang="en-us">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta
+    http-equiv="Content-Type"
+    content="text/html; charset=utf-8"
+  >
 
   <title>Unity Web Player | CosmicWaters</title>
 
-  <link rel="shortcut icon" href="TemplateData/favicon.ico">
-  <link rel="stylesheet" href="TemplateData/style.css">
+  <link
+    rel="shortcut icon"
+    href="TemplateData/favicon.ico"
+  >
+
+  <link
+    rel="stylesheet"
+    href="TemplateData/style.css"
+  >
 
   <!-- MICROPHONE PRO START -->
   <script src="./microphone.js"></script>
@@ -15,8 +25,25 @@
 
   <style>
     /*
+     * Remove the browser's default spacing.
+     */
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+
+      margin: 0;
+      padding: 0;
+
+      background: #000000;
+
+      overflow: hidden;
+    }
+
+    /*
      * HTML back button.
-     * It starts hidden and is displayed only when Unity calls ShowBackButton().
+     * It starts hidden and is displayed only when Unity calls
+     * setWebViewBackButtonVisible(true).
      */
     #webview-back-button {
       position: fixed;
@@ -42,7 +69,8 @@
       cursor: pointer;
 
       /*
-       * Keep the HTML button above the Vuplex iframe.
+       * Keep the HTML button above the Vuplex iframe
+       * and above the loading page.
        */
       z-index: 2147483647;
 
@@ -65,6 +93,7 @@
       object-fit: contain;
 
       pointer-events: none;
+
       user-select: none;
       -webkit-user-select: none;
     }
@@ -74,26 +103,236 @@
     }
 
     #webview-back-button:focus-visible {
-      outline: 3px solid white;
+      outline: 3px solid #ffffff;
       outline-offset: 3px;
+    }
+
+    /*
+     * Custom Cosmic Waters loading page.
+     *
+     * Image location:
+     * TemplateData/Splash.png
+     */
+    #unity-loading-bar {
+      position: fixed !important;
+
+      top: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      left: 0 !important;
+
+      width: 100vw !important;
+      height: 100vh !important;
+      height: 100dvh !important;
+
+      margin: 0 !important;
+
+      /*
+       * Cancel the position and transform from Unity's
+       * original TemplateData/style.css.
+       */
+      transform: none !important;
+
+      /*
+       * Show the loading page immediately.
+       * JavaScript hides it after Unity finishes loading.
+       */
+      display: block;
+
+      background-color: #000000;
+      background-image: url("TemplateData/Splash.png");
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: cover;
+
+      overflow: hidden;
+
+      z-index: 2147483646;
+
+      pointer-events: auto;
+
+      box-sizing: border-box;
+    }
+
+    /*
+     * The logo is already inside Splash.png,
+     * so hide Unity's default logo.
+     */
+    #unity-logo {
+      display: none !important;
+    }
+
+    /*
+     * Empty loading bar container.
+     *
+     * Its position is approximately the same as the
+     * loading bar in your supplied design.
+     */
+    #unity-progress-bar-empty {
+      position: absolute !important;
+
+      left: 50% !important;
+      top: 78% !important;
+
+      width: clamp(
+        180px,
+        49vw,
+        320px
+      ) !important;
+
+      height: 11px !important;
+
+      margin: 0 !important;
+      padding: 2px !important;
+
+      transform: translate(
+        -50%,
+        -50%
+      ) !important;
+
+      border: 1.5px solid rgba(
+        255,
+        255,
+        255,
+        0.95
+      ) !important;
+
+      border-radius: 999px !important;
+
+      background: rgba(
+        5,
+        5,
+        5,
+        0.82
+      ) !important;
+
+      box-shadow:
+        0 0 7px rgba(255, 255, 255, 0.32),
+        0 2px 7px rgba(0, 0, 0, 0.85) !important;
+
+      overflow: hidden !important;
+
+      box-sizing: border-box !important;
+    }
+
+    /*
+     * Gold progress fill.
+     */
+    #unity-progress-bar-full {
+      width: 0%;
+      height: 100% !important;
+
+      margin: 0 !important;
+      padding: 0 !important;
+
+      border-radius: 999px !important;
+
+      background: linear-gradient(
+        90deg,
+        #a97006 0%,
+        #cf9e1e 35%,
+        #f2d66f 70%,
+        #c68e0a 100%
+      ) !important;
+
+      box-shadow:
+        0 0 7px rgba(
+          232,
+          190,
+          67,
+          0.75
+        ) !important;
+
+      transition: width 0.12s linear;
+
+      box-sizing: border-box !important;
+    }
+
+    /*
+     * Small-phone adjustment.
+     */
+    @media screen and (max-width: 480px) {
+      #webview-back-button {
+        width: 52px;
+        height: 52px;
+
+        top: max(
+          14px,
+          env(safe-area-inset-top)
+        );
+
+        left: max(
+          14px,
+          env(safe-area-inset-left)
+        );
+      }
+
+      #webview-back-button img {
+        width: 28px;
+        height: 28px;
+      }
+
+      #unity-progress-bar-empty {
+        width: 49vw !important;
+        min-width: 180px !important;
+        max-width: 230px !important;
+
+        top: 78% !important;
+      }
+    }
+
+    /*
+     * Tablet adjustment.
+     */
+    @media screen and (min-width: 481px) and (max-width: 1024px) {
+      #unity-progress-bar-empty {
+        width: min(
+          48vw,
+          290px
+        ) !important;
+
+        top: 78% !important;
+      }
+    }
+
+    /*
+     * Desktop adjustment.
+     *
+     * Splash.png remains centered and fills the browser.
+     */
+    @media screen and (min-width: 1025px) {
+      #unity-progress-bar-empty {
+        width: min(
+          32vw,
+          320px
+        ) !important;
+
+        top: 78% !important;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <div id="unity-container" class="unity-desktop">
+  <div
+    id="unity-container"
+    class="unity-desktop"
+  >
 
     <canvas
       id="unity-canvas"
       width="960"
       height="600"
-      tabindex="-1">
+      tabindex="-1"
+    >
     </canvas>
 
     <!--
       HTML button displayed above the Vuplex WebView.
-      The icon is loaded from TemplateData/back-arrow.png.
+
+      Keep the image here:
+      TemplateData/back-arrow.png
     -->
     <button
       id="webview-back-button"
@@ -107,10 +346,30 @@
       >
     </button>
 
-    <div id="unity-loading-bar">
-      <div id="unity-logo"></div>
+    <!--
+      Full-screen custom loading page.
 
-      <div id="unity-progress-bar-empty">
+      Keep the loading image here:
+      TemplateData/Splash.png
+    -->
+    <div
+      id="unity-loading-bar"
+      aria-label="Loading Cosmic Waters"
+    >
+      <div
+        id="unity-logo"
+        aria-hidden="true"
+      >
+      </div>
+
+      <div
+        id="unity-progress-bar-empty"
+        role="progressbar"
+        aria-label="Loading progress"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="0"
+      >
         <div id="unity-progress-bar-full"></div>
       </div>
     </div>
@@ -119,29 +378,54 @@
 
     <div id="unity-footer">
       <div id="unity-logo-title-footer"></div>
+
       <div id="unity-fullscreen-button"></div>
-      <div id="unity-build-title">CosmicWaters</div>
+
+      <div id="unity-build-title">
+        CosmicWaters
+      </div>
     </div>
 
   </div>
 
   <script>
-    var canvas = document.querySelector("#unity-canvas");
+    var canvas = document.querySelector(
+      "#unity-canvas"
+    );
+
+    var loadingBar = document.querySelector(
+      "#unity-loading-bar"
+    );
+
+    var progressBarEmpty = document.querySelector(
+      "#unity-progress-bar-empty"
+    );
+
+    var progressBarFull = document.querySelector(
+      "#unity-progress-bar-full"
+    );
 
     /*
      * Global Unity instance.
-     * This is required so the HTML button can call Unity SendMessage().
+     *
+     * This is required so the HTML back button
+     * can call Unity SendMessage().
      */
     window.unityInstance = null;
 
     /*
-     * Unity GameObject and public method that receive the HTML back-button click.
+     * Unity GameObject and public method that receive
+     * the HTML back-button click.
      *
      * The Unity GameObject must be named exactly:
+     *
      * WebViewBackButtonBridge
      */
-    const backButtonUnityGameObject = "WebViewBackButtonBridge";
-    const backButtonUnityMethod = "OnHtmlBackButtonClicked";
+    const backButtonUnityGameObject =
+      "WebViewBackButtonBridge";
+
+    const backButtonUnityMethod =
+      "OnHtmlBackButtonClicked";
 
     /*
      * Prevent accidental double clicks on mobile devices.
@@ -150,9 +434,12 @@
 
     /*
      * Shows or hides the HTML back button.
+     *
      * This function is called by the WebGL .jslib plugin.
      */
-    window.setWebViewBackButtonVisible = function (visible) {
+    window.setWebViewBackButtonVisible = function (
+      visible
+    ) {
       const backButton = document.getElementById(
         "webview-back-button"
       );
@@ -195,7 +482,8 @@
        */
       if (
         window.unityInstance &&
-        typeof window.unityInstance.SendMessage === "function"
+        typeof window.unityInstance.SendMessage ===
+          "function"
       ) {
         window.unityInstance.SendMessage(
           backButtonUnityGameObject,
@@ -203,12 +491,14 @@
         );
       } else {
         console.warn(
-          "Unity is not ready. The back-button event was not sent."
+          "Unity is not ready. " +
+          "The back-button event was not sent."
         );
       }
 
       /*
-       * Unlock after a short delay to avoid sensitive mobile double taps.
+       * Unlock after a short delay to avoid
+       * sensitive mobile double taps.
        */
       window.setTimeout(function () {
         backButtonClickLocked = false;
@@ -253,7 +543,8 @@
     }
 
     /*
-     * Shows a temporary warning or error message above the Unity canvas.
+     * Shows a temporary warning or error message
+     * above the Unity canvas.
      */
     function unityShowBanner(msg, type) {
       var warningBanner = document.querySelector(
@@ -274,7 +565,8 @@
       warningBanner.appendChild(div);
 
       if (type === "error") {
-        div.style = "background: red; padding: 10px;";
+        div.style =
+          "background: red; padding: 10px;";
       } else {
         if (type === "warning") {
           div.style =
@@ -291,10 +583,12 @@
     }
 
     /*
-     * Keep your original Unity build configuration.
+     * Keep the original Unity build configuration.
      */
     var buildUrl = "Build";
-    var loaderUrl = buildUrl + "/Build.loader.js";
+
+    var loaderUrl =
+      buildUrl + "/Build.loader.js";
 
     var config = {
       arguments: [],
@@ -303,18 +597,26 @@
         buildUrl + "/Build.data.unityweb",
 
       frameworkUrl:
-        buildUrl + "/Build.framework.js.unityweb",
+        buildUrl +
+        "/Build.framework.js.unityweb",
 
       codeUrl:
         buildUrl + "/Build.wasm.unityweb",
 
-      streamingAssetsUrl: "StreamingAssets",
+      streamingAssetsUrl:
+        "StreamingAssets",
 
-      companyName: "Cruises",
-      productName: "CosmicWaters",
-      productVersion: "0.1",
+      companyName:
+        "Cruises",
 
-      showBanner: unityShowBanner
+      productName:
+        "CosmicWaters",
+
+      productVersion:
+        "0.1",
+
+      showBanner:
+        unityShowBanner
     };
 
     /*
@@ -325,7 +627,9 @@
         navigator.userAgent
       )
     ) {
-      var meta = document.createElement("meta");
+      var meta = document.createElement(
+        "meta"
+      );
 
       meta.name = "viewport";
 
@@ -333,8 +637,10 @@
         "width=device-width, " +
         "height=device-height, " +
         "initial-scale=1.0, " +
+        "maximum-scale=1.0, " +
         "user-scalable=no, " +
-        "shrink-to-fit=yes";
+        "shrink-to-fit=yes, " +
+        "viewport-fit=cover";
 
       document
         .getElementsByTagName("head")[0]
@@ -359,11 +665,25 @@
       canvas.style.height = "600px";
     }
 
-    document.querySelector(
-      "#unity-loading-bar"
-    ).style.display = "block";
+    /*
+     * Make sure the loading screen is visible
+     * while Unity starts.
+     */
+    loadingBar.style.display = "block";
 
-    var script = document.createElement("script");
+    /*
+     * Begin at zero progress.
+     */
+    progressBarFull.style.width = "0%";
+
+    progressBarEmpty.setAttribute(
+      "aria-valuenow",
+      "0"
+    );
+
+    var script = document.createElement(
+      "script"
+    );
 
     script.src = loaderUrl;
 
@@ -372,31 +692,53 @@
         canvas,
         config,
         function (progress) {
-          document.querySelector(
-            "#unity-progress-bar-full"
-          ).style.width =
-            100 * progress + "%";
+          var progressPercent = Math.round(
+            100 * progress
+          );
+
+          progressBarFull.style.width =
+            progressPercent + "%";
+
+          progressBarEmpty.setAttribute(
+            "aria-valuenow",
+            progressPercent
+          );
         }
       )
         .then(function (unityInstance) {
           /*
-           * Store Unity globally so the HTML button can use SendMessage().
+           * Store Unity globally so the HTML
+           * button can use SendMessage().
            */
-          window.unityInstance = unityInstance;
+          window.unityInstance =
+            unityInstance;
 
-          document.querySelector(
-            "#unity-loading-bar"
-          ).style.display = "none";
+          /*
+           * Complete the progress bar before
+           * hiding the loading page.
+           */
+          progressBarFull.style.width = "100%";
+
+          progressBarEmpty.setAttribute(
+            "aria-valuenow",
+            "100"
+          );
+
+          window.setTimeout(function () {
+            loadingBar.style.display = "none";
+          }, 150);
 
           document.querySelector(
             "#unity-fullscreen-button"
           ).onclick = function () {
             /*
-             * Preserve your original Vuplex fullscreen behavior.
+             * Preserve the original Vuplex
+             * fullscreen behavior.
              */
             if (
               window.vuplex &&
-              typeof window.vuplex.SetFullscreen === "function"
+              typeof window.vuplex.SetFullscreen ===
+                "function"
             ) {
               window.vuplex.SetFullscreen(1);
             } else {
@@ -409,6 +751,13 @@
         .catch(function (message) {
           alert(message);
         });
+    };
+
+    script.onerror = function () {
+      alert(
+        "Failed to load the Unity loader file: " +
+        loaderUrl
+      );
     };
 
     document.body.appendChild(script);
