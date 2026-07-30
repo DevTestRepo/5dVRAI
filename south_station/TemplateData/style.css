@@ -45,7 +45,7 @@ body {
   background:
     radial-gradient(
       circle at center 58%,
-      rgba(255, 0, 128, 0.22),
+      rgba(255, 196, 0, 0.295),
       rgba(0, 0, 0, 0.15) 34%,
       rgba(0, 0, 0, 0.68) 74%
     ),
@@ -59,7 +59,7 @@ body {
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.22),
+      rgba(255, 196, 0, 0.295),
     rgba(0, 0, 0, 0.04) 45%,
     rgba(0, 0, 0, 0.30)
   );
